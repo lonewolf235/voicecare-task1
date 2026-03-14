@@ -18,10 +18,10 @@ scikit-learn>=1.4.0          # cosine_similarity for embedding comparison
 pyyaml>=6.0.1                # Parse sites.yaml configuration
 
 # --- Scheduling ---
-schedule>=1.2.1              # Python job scheduling (cron-like)
+apscheduler>=3.10.4          # APScheduler — BlockingScheduler + CronTrigger
 
-# --- HTTP / Slack ---
-requests>=2.31.0             # Slack webhook HTTP calls
+# --- HTTP / Slack / Semrush ---
+requests>=2.31.0             # Slack webhook + Semrush API calls
 
 # --- Environment ---
 python-dotenv>=1.0.0         # Load .env files

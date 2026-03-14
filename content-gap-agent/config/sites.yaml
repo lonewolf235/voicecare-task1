@@ -1,44 +1,97 @@
-# Content Gap Agent - Site Configuration
-# Update this file weekly with new competitor URLs or your own pages.
-# Supports multiple competitors and multiple own-site pages.
+# Content Gap Agent — Site Configuration
+# Update competitor URLs weekly. All other sections rarely change.
+#
+# Key sections:
+#   own_site         — Voicecare.ai pages to crawl
+#   competitors      — competitor content roots
+#   company_context  — facts injected into GPT script generation prompts
+#   crawl_settings   — Firecrawl depth + page limits
+#   topic_filters    — include/exclude path keywords
 
+# =============================================================================
+# Own Site — Voicecare.ai
+# =============================================================================
 own_site:
-  name: "My Company"
+  name: "Voicecare.ai"
   urls:
-    - "https://www.mycompany.com/blog"
-    - "https://www.mycompany.com/resources"
-    - "https://www.mycompany.com/product"
+    - "https://voicecare.ai/blog"
+    - "https://voicecare.ai/resources"
+    - "https://voicecare.ai/use-cases"
 
+# =============================================================================
+# Competitors — update weekly
+# =============================================================================
 competitors:
-  - name: "Competitor A"
+  - name: "Syllable"
     urls:
-      - "https://www.competitora.com/blog"
-      - "https://www.competitora.com/resources"
-      - "https://www.competitora.com/guides"
+      - "https://syllable.ai/blog"
+      - "https://syllable.ai/resources"
 
-  - name: "Competitor B"
+  - name: "Nuance DAX"
     urls:
-      - "https://www.competitorb.com/blog"
-      - "https://www.competitorb.com/articles"
+      - "https://www.nuance.com/healthcare/ambient-clinical-intelligence.html"
+      - "https://www.nuance.com/blog"
 
-  - name: "Competitor C"
+  - name: "Hyro AI"
     urls:
-      - "https://www.competitorc.com/insights"
-      - "https://www.competitorc.com/learning-center"
+      - "https://www.hyro.ai/blog"
+      - "https://www.hyro.ai/resources"
 
-# Crawl settings
+  - name: "Parlance"
+    urls:
+      - "https://parlance.com/blog"
+
+# =============================================================================
+# Company Context — injected into script generation prompts
+# =============================================================================
+company_context:
+  name: "Voicecare.ai"
+  tagline: "AI-powered voice agents for healthcare — 24/7, HIPAA-compliant"
+  url: "https://voicecare.ai"
+  founded: 2023
+  key_features:
+    - "24/7 AI voice triage — patients get answers without hold times"
+    - "Automated appointment booking and reminders"
+    - "EHR integration (Epic, Cerner, Athenahealth)"
+    - "HIPAA-compliant end-to-end encryption"
+    - "Real-time escalation to human staff for urgent cases"
+    - "Multilingual support (English, Spanish, and 12 more languages)"
+  differentiators:
+    - "Built exclusively for healthcare — not a generic voice bot"
+    - "Reduces no-shows by up to 40% through intelligent reminder cadences"
+    - "Deploys in under 2 weeks with pre-built EHR connectors"
+  target_customer: >
+    Healthcare providers, clinic managers, hospital operations leads,
+    and digital health teams at practices with 3+ providers
+  proof_points:
+    - "Average 38% reduction in after-hours missed calls"
+    - "2-week average deployment time"
+    - "HIPAA BAA provided at contract signing"
+    - "NPS score 72 among deployed practices"
+  cta: "Book a free 15-minute demo at voicecare.ai/demo"
+
+# =============================================================================
+# Crawl Settings
+# =============================================================================
 crawl_settings:
-  max_depth: 2          # How deep to follow links from each URL
-  max_pages_per_site: 50  # Max pages to crawl per competitor
-  timeout_seconds: 30   # Per-request timeout
-  include_subpages: true  # Follow links within the same domain
+  max_depth: 2            # Depth of link-following from each root URL
+  max_pages_per_site: 50  # Hard cap per competitor (avoids runaway crawls)
+  timeout_seconds: 30     # Per-request timeout
+  include_subpages: true  # Follow internal links within the same domain
 
-# Topic filtering (optional - leave empty to include all topics)
+# =============================================================================
+# Topic Filters
+# =============================================================================
 topic_filters:
-  include_keywords: []  # e.g. ["AI", "machine learning", "automation"]
-  exclude_keywords:     # Pages whose titles contain these are skipped
+  include_keywords: []    # Leave empty to accept all topics
+  exclude_keywords:       # Skip pages whose URL paths contain these strings
     - "careers"
     - "jobs"
     - "privacy-policy"
     - "terms"
+    - "terms-of-service"
+    - "cookie"
     - "contact"
+    - "login"
+    - "signup"
+    - "press-release"
