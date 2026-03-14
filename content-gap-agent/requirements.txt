@@ -1,0 +1,31 @@
+# Content Gap Agent — Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# --- Web Scraping ---
+firecrawl-py>=1.5.0          # Firecrawl SDK for structured web crawling
+
+# --- AI / LLM ---
+openai>=1.30.0               # OpenAI SDK (embeddings + GPT completions)
+
+# --- Data Handling ---
+pandas>=2.1.0                # DataFrame operations, CSV export
+numpy>=1.26.0                # Numerical operations for embeddings
+
+# --- Machine Learning ---
+scikit-learn>=1.4.0          # cosine_similarity for embedding comparison
+
+# --- Configuration ---
+pyyaml>=6.0.1                # Parse sites.yaml configuration
+
+# --- Scheduling ---
+schedule>=1.2.1              # Python job scheduling (cron-like)
+
+# --- HTTP / Slack ---
+requests>=2.31.0             # Slack webhook HTTP calls
+
+# --- Environment ---
+python-dotenv>=1.0.0         # Load .env files
+
+# --- Development / Testing (optional) ---
+pytest>=8.0.0                # Test runner
+pytest-mock>=3.12.0          # Mocking for tests

@@ -1,0 +1,44 @@
+# Content Gap Agent - Site Configuration
+# Update this file weekly with new competitor URLs or your own pages.
+# Supports multiple competitors and multiple own-site pages.
+
+own_site:
+  name: "My Company"
+  urls:
+    - "https://www.mycompany.com/blog"
+    - "https://www.mycompany.com/resources"
+    - "https://www.mycompany.com/product"
+
+competitors:
+  - name: "Competitor A"
+    urls:
+      - "https://www.competitora.com/blog"
+      - "https://www.competitora.com/resources"
+      - "https://www.competitora.com/guides"
+
+  - name: "Competitor B"
+    urls:
+      - "https://www.competitorb.com/blog"
+      - "https://www.competitorb.com/articles"
+
+  - name: "Competitor C"
+    urls:
+      - "https://www.competitorc.com/insights"
+      - "https://www.competitorc.com/learning-center"
+
+# Crawl settings
+crawl_settings:
+  max_depth: 2          # How deep to follow links from each URL
+  max_pages_per_site: 50  # Max pages to crawl per competitor
+  timeout_seconds: 30   # Per-request timeout
+  include_subpages: true  # Follow links within the same domain
+
+# Topic filtering (optional - leave empty to include all topics)
+topic_filters:
+  include_keywords: []  # e.g. ["AI", "machine learning", "automation"]
+  exclude_keywords:     # Pages whose titles contain these are skipped
+    - "careers"
+    - "jobs"
+    - "privacy-policy"
+    - "terms"
+    - "contact"
