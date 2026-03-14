@@ -1,0 +1,233 @@
+{
+  "run_timestamp": "20260315_002651",
+  "gap_analysis": {
+    "total_gaps_found": 51,
+    "analysis_date": "2026-03-15",
+    "summary": "Found 51 content gaps. Top topic: 'Blog'",
+    "top_gaps": [
+      {
+        "rank": 1,
+        "topic": "Blog",
+        "gap_description": "Competitor covers this; our site similarity score 10.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 10.0,
+          "novelty": 5.0,
+          "viral": 4.0,
+          "priority_score": 7.3
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 27100,
+          "novelty_score": 5.0,
+          "viral_score": 4.0,
+          "final_score": 7.3
+        }
+      },
+      {
+        "rank": 2,
+        "topic": "Healthcare Voice AI Agents Guide 2026: Complete Playbook",
+        "gap_description": "Competitor covers this; our site similarity score 1.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 1.0,
+          "novelty": 7.0,
+          "viral": 5.8,
+          "priority_score": 3.76
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 0,
+          "novelty_score": 7.0,
+          "viral_score": 5.8,
+          "final_score": 3.76
+        }
+      },
+      {
+        "rank": 3,
+        "topic": "AI Agent Demo: New Patient Intake Scheduling Guide (2026)",
+        "gap_description": "Competitor covers this; our site similarity score 1.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 1.0,
+          "novelty": 6.0,
+          "viral": 5.8,
+          "priority_score": 3.46
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 0,
+          "novelty_score": 6.0,
+          "viral_score": 5.8,
+          "final_score": 3.46
+        }
+      }
+    ]
+  },
+  "scripts": [
+    {
+      "topic": "Blog",
+      "hook": {
+        "text": "Did you know 38% of patient calls go unanswered after hours?",
+        "duration_seconds": 4,
+        "visual_suggestion": "A phone ringing with no one picking up, followed by a frustrated patient hanging up."
+      },
+      "scene_1": {
+        "text": "Missed calls mean missed patients. They hang up and call someone else.",
+        "duration_seconds": 9,
+        "visual_suggestion": "A visual of a patient searching for alternative clinics on their phone."
+      },
+      "scene_2": {
+        "text": "What if AI could handle those calls? No more voicemails, no more losses.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Animation showing an AI system answering a call and helping a patient."
+      },
+      "scene_3": {
+        "text": "Patient calls in. AI triages in seconds. Books or escalates instantly.",
+        "duration_seconds": 9,
+        "visual_suggestion": "A simple flowchart showing the call process: Incoming Call -> AI Triage -> Booking/Escalation."
+      },
+      "scene_4": {
+        "text": "One clinic reduced no-shows by 40% in just 3 months. No extra staff.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Real clinic data showing before and after no-show rates, with a thumbs-up icon."
+      },
+      "scene_5": {
+        "text": "In 2025, leading clinics won't make patients wait. At all.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Future-focused imagery of a modern clinic with satisfied patients."
+      },
+      "cta": {
+        "text": "Book a free 15-minute demo at voicecare.ai/demo.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Text overlay with animated cursor clicking on a demo booking link."
+      },
+      "full_script": "[HOOK] Did you know 38% of patient calls go unanswered after hours? [SCENE 1] Missed calls mean missed patients. They hang up and call someone else. [SCENE 2] What if AI could handle those calls? No more voicemails, no more losses. [SCENE 3] Patient calls in. AI triages in seconds. Books or escalates instantly. [SCENE 4] One clinic reduced no-shows by 40% in just 3 months. No extra staff. [SCENE 5] In 2025, leading clinics won't make patients wait. At all. [CTA] Book a free 15-minute demo at voicecare.ai/demo.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#HealthcareAI",
+        "#VoiceAI",
+        "#PatientCare",
+        "#HealthcareInnovation",
+        "#VoicecareAI"
+      ],
+      "caption": "Stop losing patients to missed calls. Discover AI voice agents today!",
+      "thumbnail_text": "Reduce Missed Calls Now",
+      "generated_at": "2026-03-15T00:26:40.058855",
+      "company": "Voicecare.ai",
+      "output_file": "outputs\\week_2026-03-15.json"
+    },
+    {
+      "topic": "Healthcare Voice AI Agents Guide 2026: Complete Playbook",
+      "hook": {
+        "text": "Could Voice AI save your clinic 30 hours a week?",
+        "duration_seconds": 4,
+        "visual_suggestion": "A clock ticking down rapidly with a surprised face emoji."
+      },
+      "scene_1": {
+        "text": "Missed calls pile up. Staff are overwhelmed. Patients leave frustrated.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Frustrated patients waiting on phone call and busy staff juggling tasks."
+      },
+      "scene_2": {
+        "text": "What if AI could handle routine calls, freeing your staff for care?",
+        "duration_seconds": 9,
+        "visual_suggestion": "A split screen of AI taking calls and staff helping patients."
+      },
+      "scene_3": {
+        "text": "Patient calls \u00e2\u2020\u2019 AI answers \u00e2\u2020\u2019 Schedules or redirects \u00e2\u20ac\u201d all in 30 seconds.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Animation showing call flow from patient to AI to resolution."
+      },
+      "scene_4": {
+        "text": "A clinic reduced admin tasks by 40% in just 2 months.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graph showing a decline in manual tasks and upward trend in patient satisfaction."
+      },
+      "scene_5": {
+        "text": "By 2026, mastering Voice AI will define your clinic's success.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Futuristic clinic with AI integrated in everyday operations."
+      },
+      "cta": {
+        "text": "Want to lead the charge? Click the link for your AI guide.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Clickable link icon with a quick animation of a download."
+      },
+      "full_script": "[HOOK] Could Voice AI save your clinic 30 hours a week? [SCENE 1] Missed calls pile up. Staff are overwhelmed. Patients leave frustrated. [SCENE 2] What if AI could handle routine calls, freeing your staff for care? [SCENE 3] Patient calls \u00e2\u2020\u2019 AI answers \u00e2\u2020\u2019 Schedules or redirects \u00e2\u20ac\u201d all in 30 seconds. [SCENE 4] A clinic reduced admin tasks by 40% in just 2 months. [SCENE 5] By 2026, mastering Voice AI will define your clinic's success. [CTA] Want to lead the charge? Click the link for your AI guide.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#VoiceAI",
+        "#HealthcareInnovation",
+        "#FutureOfCare",
+        "#EfficiencyBoost",
+        "#AIinHealthcare"
+      ],
+      "caption": "Transform your clinic's efficiency with Voice AI. Get the guide now!",
+      "thumbnail_text": "Save 30 Hours Weekly!",
+      "gap_rank": 2,
+      "priority_score": 3.76,
+      "covered_by_competitors": [],
+      "suggested_format": "video"
+    },
+    {
+      "topic": "AI Agent Demo: New Patient Intake Scheduling Guide (2026)",
+      "hook": {
+        "text": "Your appointment book isn't full \u00e2\u20ac\u201d and AI can fix that.",
+        "duration_seconds": 4,
+        "visual_suggestion": "Bold text on screen with a background of a half-empty waiting room."
+      },
+      "scene_1": {
+        "text": "Missed calls mean missed patients. And lost revenue. Sound familiar?",
+        "duration_seconds": 9,
+        "visual_suggestion": "Image of a ringing phone next to an empty reception desk."
+      },
+      "scene_2": {
+        "text": "Here's the twist: AI doesn't just pick up calls, it fills your schedule.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Animation of AI technology connecting a call to a calendar."
+      },
+      "scene_3": {
+        "text": "Step 1: Call comes in. Step 2: AI checks availability. Step 3: Appointment booked \u00e2\u20ac\u201d all in 30 seconds.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Simple 3-step animation showing the process from call to booking."
+      },
+      "scene_4": {
+        "text": "One practice reduced no-shows by 50% in 3 months. No added staff needed.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Before and after comparison chart showing decrease in no-shows."
+      },
+      "scene_5": {
+        "text": "In 2026, winners don't make patients wait. They schedule instantly.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Futuristic clinic with patients being quickly attended to."
+      },
+      "cta": {
+        "text": "See it in action. Tap the link for a demo now.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Clickable link button on screen with demo invitation text."
+      },
+      "full_script": "[HOOK] Your appointment book isn't full \u00e2\u20ac\u201d and AI can fix that. [SCENE 1] Missed calls mean missed patients. And lost revenue. Sound familiar? [SCENE 2] Here's the twist: AI doesn't just pick up calls, it fills your schedule. [SCENE 3] Step 1: Call comes in. Step 2: AI checks availability. Step 3: Appointment booked \u00e2\u20ac\u201d all in 30 seconds. [SCENE 4] One practice reduced no-shows by 50% in 3 months. No added staff needed. [SCENE 5] In 2026, winners don't make patients wait. They schedule instantly. [CTA] See it in action. Tap the link for a demo now.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#HealthcareAI",
+        "#PatientIntake",
+        "#Efficiency",
+        "#FutureOfHealthcare",
+        "#NoMoreNoShows"
+      ],
+      "caption": "Transform your patient intake with AI! See how in our latest demo.",
+      "thumbnail_text": "Boost Your Appointments with AI!",
+      "gap_rank": 3,
+      "priority_score": 3.46,
+      "covered_by_competitors": [],
+      "suggested_format": "video"
+    }
+  ]
+}

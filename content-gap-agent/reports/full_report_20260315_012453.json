@@ -1,0 +1,233 @@
+{
+  "run_timestamp": "20260315_012453",
+  "gap_analysis": {
+    "total_gaps_found": 51,
+    "analysis_date": "2026-03-15",
+    "summary": "Found 51 content gaps. Top topic: 'Blog'",
+    "top_gaps": [
+      {
+        "rank": 1,
+        "topic": "Blog",
+        "gap_description": "Competitor covers this; our site similarity score 10.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 10.0,
+          "novelty": 5.0,
+          "viral": 4.0,
+          "priority_score": 7.3
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 27100,
+          "novelty_score": 5.0,
+          "viral_score": 4.0,
+          "final_score": 7.3
+        }
+      },
+      {
+        "rank": 2,
+        "topic": "Blog",
+        "gap_description": "Competitor covers this; our site similarity score 10.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 10.0,
+          "novelty": 5.0,
+          "viral": 4.0,
+          "priority_score": 7.3
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 27100,
+          "novelty_score": 5.0,
+          "viral_score": 4.0,
+          "final_score": 7.3
+        }
+      },
+      {
+        "rank": 3,
+        "topic": "Healthcare Voice AI Agents Guide 2026: Complete Playbook",
+        "gap_description": "Competitor covers this; our site similarity score 1.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 1.0,
+          "novelty": 7.0,
+          "viral": 5.8,
+          "priority_score": 3.76
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 0,
+          "novelty_score": 7.0,
+          "viral_score": 5.8,
+          "final_score": 3.76
+        }
+      }
+    ]
+  },
+  "scripts": [
+    {
+      "topic": "Blog",
+      "hook": {
+        "text": "Your clinic misses 38% of after-hours calls. Patients are slipping away.",
+        "duration_seconds": 4,
+        "visual_suggestion": "Animated statistic counter ticking up to 38%"
+      },
+      "scene_1": {
+        "text": "Frustrated patients hang up when they hit voicemail. They call elsewhere.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Split-screen of a caller hanging up and another clinic receiving a call"
+      },
+      "scene_2": {
+        "text": "Meet Voicecare.ai. It\u2019s not replacing your team; it\u2019s enhancing them.",
+        "duration_seconds": 9,
+        "visual_suggestion": "AI voice agent graphic next to a human receptionist"
+      },
+      "scene_3": {
+        "text": "Caller dials in. AI answers instantly. Books, triages, or alerts staff.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Flowchart: Call -> AI Response -> Action"
+      },
+      "scene_4": {
+        "text": "A clinic cut no-shows by 40% in 90 days. Just smarter reminders.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Bar graph showing no-show reduction"
+      },
+      "scene_5": {
+        "text": "In 2025, winners never make patients wait. Be ahead today.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Clock countdown to the year 2025"
+      },
+      "cta": {
+        "text": "Book a free 15-minute demo at voicecare.ai/demo. Don\u2019t wait.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Call-to-action screen with URL and demo details"
+      },
+      "full_script": "[HOOK] Your clinic misses 38% of after-hours calls. Patients are slipping away. [SCENE 1] Frustrated patients hang up when they hit voicemail. They call elsewhere. [SCENE 2] Meet Voicecare.ai. It\u2019s not replacing your team; it\u2019s enhancing them. [SCENE 3] Caller dials in. AI answers instantly. Books, triages, or alerts staff. [SCENE 4] A clinic cut no-shows by 40% in 90 days. Just smarter reminders. [SCENE 5] In 2025, winners never make patients wait. Be ahead today. [CTA] Book a free 15-minute demo at voicecare.ai/demo. Don\u2019t wait.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#HealthcareAI",
+        "#NoMoreVoicemail",
+        "#ClinicEfficiency",
+        "#PatientSatisfaction",
+        "#VoicecareAI"
+      ],
+      "caption": "Stop losing patients to missed calls. Discover how Voicecare.ai changes the game.",
+      "thumbnail_text": "Stop Losing Patients",
+      "generated_at": "2026-03-15T01:24:42.162050",
+      "company": "Voicecare.ai",
+      "output_file": "outputs\\week_2026-03-15.json"
+    },
+    {
+      "topic": "Blog",
+      "hook": {
+        "text": "Are your blogs getting lost in the noise?",
+        "duration_seconds": 4,
+        "visual_suggestion": "A busy feed of endless blog posts scrolling by"
+      },
+      "scene_1": {
+        "text": "You've spent hours writing, but your blog barely gets views.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Frustrated face staring at low view count on a screen"
+      },
+      "scene_2": {
+        "text": "Here's the secret: Content optimization isn't just SEO \u00e2\u20ac\u201d it's about engagement.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Light bulb moment, someone highlighting engaging text in a blog"
+      },
+      "scene_3": {
+        "text": "1. Hook with a bold intro. 2. Structure for clarity. 3. End with action.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Step-by-step animation of writing a blog post"
+      },
+      "scene_4": {
+        "text": "One blog boosted engagement by 80% using these steps. No extra costs.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graph showing a spike in blog engagement stats"
+      },
+      "scene_5": {
+        "text": "In 2025, the winning blogs are crafted like conversations \u00e2\u20ac\u201d not lectures.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Future vision of interactive blog reading"
+      },
+      "cta": {
+        "text": "Want more tips? Link in bio for a free content guide!",
+        "duration_seconds": 7,
+        "visual_suggestion": "Call-to-action screen with link and guide cover image"
+      },
+      "full_script": "[HOOK] Are your blogs getting lost in the noise? [SCENE 1] You've spent hours writing, but your blog barely gets views. [SCENE 2] Here's the secret: Content optimization isn't just SEO \u00e2\u20ac\u201d it's about engagement. [SCENE 3] 1. Hook with a bold intro. 2. Structure for clarity. 3. End with action. [SCENE 4] One blog boosted engagement by 80% using these steps. No extra costs. [SCENE 5] In 2025, the winning blogs are crafted like conversations \u00e2\u20ac\u201d not lectures. [CTA] Want more tips? Link in bio for a free content guide!",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#BloggingTips",
+        "#ContentStrategy",
+        "#EngagementBoost",
+        "#DigitalMarketing",
+        "#SEO"
+      ],
+      "caption": "Craft blogs that engage, not just rank. Free guide \u00e2\u2020\u2019 Link in bio!",
+      "thumbnail_text": "Boost Blog Views Now!",
+      "gap_rank": 2,
+      "priority_score": 7.3,
+      "covered_by_competitors": [],
+      "suggested_format": "video"
+    },
+    {
+      "topic": "Healthcare Voice AI Agents Guide 2026: Complete Playbook",
+      "hook": {
+        "text": "Are you ready to save $120,000 a year on patient calls?",
+        "duration_seconds": 4,
+        "visual_suggestion": "Bold text overlay: '$120,000 Savings?'"
+      },
+      "scene_1": {
+        "text": "Your phones ring non-stop. Staff is overwhelmed. Patients hang up frustrated.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Busy office with ringing phones and stressed staff."
+      },
+      "scene_2": {
+        "text": "Meet Voice AI \u00e2\u20ac\u201d your team's new best friend for call management.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Animated character of a friendly AI assistant."
+      },
+      "scene_3": {
+        "text": "AI answers calls, triages needs, and schedules appointments in seconds.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Simple flowchart: Call \u00e2\u2020\u2019 AI Triage \u00e2\u2020\u2019 Appointment Set"
+      },
+      "scene_4": {
+        "text": "Our clients cut abandoned calls by 50% in just 3 months.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graph showing the drop in abandoned calls over three months."
+      },
+      "scene_5": {
+        "text": "By 2026, efficient call management will define patient care success.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Future vision of a seamless, tech-enabled healthcare facility."
+      },
+      "cta": {
+        "text": "Discover how AI can transform your practice \u00e2\u20ac\u201d link in bio.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Clickable link with a call-to-action message."
+      },
+      "full_script": "[HOOK] Are you ready to save $120,000 a year on patient calls? [SCENE 1] Your phones ring non-stop. Staff is overwhelmed. Patients hang up frustrated. [SCENE 2] Meet Voice AI \u00e2\u20ac\u201d your team's new best friend for call management. [SCENE 3] AI answers calls, triages needs, and schedules appointments in seconds. [SCENE 4] Our clients cut abandoned calls by 50% in just 3 months. [SCENE 5] By 2026, efficient call management will define patient care success. [CTA] Discover how AI can transform your practice \u00e2\u20ac\u201d link in bio.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#HealthcareAI",
+        "#VoiceAI",
+        "#PatientCare",
+        "#HealthTech",
+        "#FutureOfHealthcare"
+      ],
+      "caption": "Revolutionize your practice with Voice AI! #HealthcareAI #VoiceAI",
+      "thumbnail_text": "Save $120k with AI!",
+      "gap_rank": 3,
+      "priority_score": 3.76,
+      "covered_by_competitors": [],
+      "suggested_format": "video"
+    }
+  ]
+}

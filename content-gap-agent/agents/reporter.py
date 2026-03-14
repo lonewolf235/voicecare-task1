@@ -17,6 +17,8 @@ from typing import Any
 import pandas as pd
 import requests
 
+from agents.notion_exporter import export_script_to_notion
+
 logger = logging.getLogger(__name__)
 
 REPORTS_DIR = os.getenv("REPORTS_DIR", "reports")
@@ -245,7 +247,8 @@ def _build_slack_blocks(
                         "text": (
                             f"*{script.get('topic', 'N/A')}*\n"
                             f"🪝 Hook: _{hook_text}_\n"
-                            f"📱 Caption: {caption}"
+                            f"📱 Caption: {caption}\n"
+                            f"🔗 < {script.get('notion_url')} | View in Notion >" if script.get('notion_url') else "🔗 Notion Export Disabled"
                         ),
                     },
                 }
@@ -354,6 +357,15 @@ def run_reporter(
     logger.info("Saving scripts CSV...")
     scripts_csv = save_scripts_to_csv(scripts, run_timestamp)
 
+    logger.info("Exporting scripts to Notion...")
+    notion_success_count = 0
+    for script in scripts:
+        if not script.get("error"):
+            url = export_script_to_notion(script)
+            if url:
+                script["notion_url"] = url
+                notion_success_count += 1
+
     logger.info("Saving full JSON report...")
     json_report = save_json_report(gap_analysis, scripts, run_timestamp)
 
@@ -371,6 +383,7 @@ def run_reporter(
         "gaps_csv": str(gaps_csv),
         "scripts_csv": str(scripts_csv),
         "json_report": str(json_report),
+        "notion_exports": notion_success_count,
         "slack_sent": slack_sent,
         "gaps_found": gap_analysis.get("total_gaps_found", 0),
         "scripts_generated": len([s for s in scripts if not s.get("error")]),
@@ -387,6 +400,7 @@ def run_reporter(
         f"Gaps CSV:          {result['gaps_csv']}\n"
         f"Scripts CSV:       {result['scripts_csv']}\n"
         f"JSON Report:       {result['json_report']}\n"
+        f"Notion Exports:    {notion_success_count}\n"
         f"Slack sent:        {result['slack_sent']}\n"
         f"{'=' * 50}"
     )

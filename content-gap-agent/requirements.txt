@@ -20,8 +20,9 @@ pyyaml>=6.0.1                # Parse sites.yaml configuration
 # --- Scheduling ---
 apscheduler>=3.10.4          # APScheduler — BlockingScheduler + CronTrigger
 
-# --- HTTP / Slack / Semrush ---
+# --- HTTP / Slack / Semrush / Notion ---
 requests>=2.31.0             # Slack webhook + Semrush API calls
+notion-client>=2.2.1         # Notion SDK for exporting generated scripts
 
 # --- Environment ---
 python-dotenv>=1.0.0         # Load .env files
