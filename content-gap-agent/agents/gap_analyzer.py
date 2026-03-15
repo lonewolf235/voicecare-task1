@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_BATCH_SIZE = 100
 GAP_SIMILARITY_THRESHOLD = 0.75
-GPT_MODEL = os.getenv("OPENAI_GPT_MODEL", "gpt-4o")
+GPT_MODEL = os.getenv("OPENAI_GPT_MODEL", "gpt-5.4")
 
 # Semrush Keywords Overview endpoint
 SEMRUSH_API_URL = "https://api.semrush.com/"
@@ -414,14 +414,18 @@ def rank_gaps_with_gpt(
     )
 
     logger.info("rank_gaps_with_gpt: sending gap analysis to GPT...")
-    response = client.chat.completions.create(
+    response = client.responses.create(
         model=GPT_MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-        temperature=0.3,
+        input=prompt,
     )
 
-    result = json.loads(response.choices[0].message.content)
+    raw_json = response.output_text
+    if raw_json.strip().startswith("```json"):
+        raw_json = raw_json.strip().strip("`").removeprefix("json").strip()
+    elif raw_json.strip().startswith("```"):
+        raw_json = raw_json.strip().strip("`").strip()
+
+    result = json.loads(raw_json)
     result.setdefault("analysis_date", str(date.today()))
     return result
 
