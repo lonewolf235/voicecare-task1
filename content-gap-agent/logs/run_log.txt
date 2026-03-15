@@ -835,3 +835,86 @@ Slack sent:        False
 2026-03-15 01:27:31,542 [INFO] __main__ — =================================================================
 2026-03-15 01:27:31,546 [INFO] __main__ — STEP 1/4 — Crawling sites...
 2026-03-15 01:27:31,546 [INFO] agents.crawler — [own_site] Crawling: https://voicecare.ai/blog
+2026-03-15 01:29:54,406 [INFO] __main__ — =================================================================
+2026-03-15 01:29:54,406 [INFO] __main__ — CONTENT GAP AGENT — RUN STARTED at 2026-03-15 01:29:54
+2026-03-15 01:29:54,406 [INFO] __main__ — =================================================================
+2026-03-15 01:29:54,410 [INFO] __main__ — STEP 1/4 — Crawling sites...
+2026-03-15 01:29:54,410 [INFO] agents.crawler — [own_site] Crawling: https://voicecare.ai/blog
+2026-03-15 01:30:02,968 [INFO] agents.crawler — [own_site] voicecare.ai: 4 pages scraped.
+2026-03-15 01:30:02,968 [INFO] agents.crawler — [own_site] Crawling: https://voicecare.ai/use-cases
+2026-03-15 01:32:07,861 [INFO] agents.crawler — [own_site] voicecare.ai: 1 pages scraped.
+2026-03-15 01:32:07,862 [INFO] agents.crawler — [competitor] Crawling: https://www.getprosper.ai/blog
+2026-03-15 01:32:40,058 [INFO] agents.crawler — [competitor] www.getprosper.ai: 50 pages scraped.
+2026-03-15 01:32:40,058 [INFO] agents.crawler — [competitor] Crawling: https://www.getprosper.ai/resources
+2026-03-15 01:32:53,236 [INFO] agents.crawler — [competitor] www.getprosper.ai: 1 pages scraped.
+2026-03-15 01:32:53,236 [INFO] __main__ — Crawl complete — own=5 pages | Prosper AI=51
+2026-03-15 01:32:53,236 [INFO] __main__ — STEP 2/4 — Analyzing content gaps...
+2026-03-15 01:32:53,236 [INFO] agents.gap_analyzer — find_gaps: embedding 51 competitor titles and 5 own-site titles...
+2026-03-15 01:32:54,662 [INFO] httpx — HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-15 01:32:55,271 [INFO] agents.gap_analyzer — embed_topics: embedded 51 titles.
+2026-03-15 01:32:56,307 [INFO] httpx — HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-15 01:32:56,309 [INFO] agents.gap_analyzer — embed_topics: embedded 5 titles.
+2026-03-15 01:32:56,310 [INFO] agents.gap_analyzer — find_gaps: 51 gaps found out of 51 competitor topics (threshold=0.75).
+2026-03-15 01:32:56,310 [INFO] agents.gap_analyzer — rank_gaps: scoring 51 gaps (Semrush=enabled)...
+2026-03-15 01:33:44,863 [INFO] agents.gap_analyzer — rank_gaps: top 3 gaps:
+  #1 [7.3] Blog
+  #2 [3.76] Healthcare Voice AI Agents Guide 2026: Complete Playbook
+  #3 [3.46] AI Agent Demo: New Patient Intake Scheduling Guide (2026)
+2026-03-15 01:33:44,863 [INFO] __main__ — Gap analysis complete — 51 gaps found, top 3 ranked
+2026-03-15 01:33:44,863 [INFO] __main__ — STEP 3/4 — Generating video scripts...
+2026-03-15 01:33:44,863 [INFO] __main__ — Generating script for top gap: 'Blog'
+2026-03-15 01:33:44,870 [INFO] agents.script_writer — generate_video_script: generating script for 'Blog'...
+2026-03-15 01:33:51,460 [INFO] httpx — HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-15 01:33:51,466 [INFO] agents.script_writer — Script saved to: outputs\week_2026-03-15.json
+2026-03-15 01:33:51,472 [INFO] agents.script_writer — run_script_writer: generating 2 scripts...
+2026-03-15 01:33:51,472 [INFO] agents.script_writer — generate_script_for_gap: 'Healthcare Voice AI Agents Guide 2026: Complete Playbook'
+2026-03-15 01:33:56,521 [INFO] httpx — HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-15 01:33:56,523 [INFO] agents.script_writer — Script saved to: outputs\week_2026-03-15.json
+2026-03-15 01:33:56,523 [INFO] agents.script_writer — Script done: Healthcare Voice AI Agents Guide 2026: Complete Playbook
+2026-03-15 01:33:56,523 [INFO] agents.script_writer — generate_script_for_gap: 'AI Agent Demo: New Patient Intake Scheduling Guide (2026)'
+2026-03-15 01:34:02,740 [INFO] httpx — HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-15 01:34:02,742 [INFO] agents.script_writer — Script saved to: outputs\week_2026-03-15.json
+2026-03-15 01:34:02,742 [INFO] agents.script_writer — Script done: AI Agent Demo: New Patient Intake Scheduling Guide (2026)
+2026-03-15 01:34:02,742 [INFO] agents.script_writer — run_script_writer: 2 scripts produced.
+2026-03-15 01:34:02,742 [INFO] __main__ — Script generation — 3/3 scripts generated
+2026-03-15 01:34:02,742 [INFO] __main__ — STEP 4/4 — Generating reports and notifications...
+2026-03-15 01:34:02,742 [INFO] agents.reporter — Saving gap analysis CSV...
+2026-03-15 01:34:02,745 [INFO] agents.reporter — Gap report saved: reports\gap_report_20260315_013402.csv
+2026-03-15 01:34:02,745 [INFO] agents.reporter — Saving scripts CSV...
+2026-03-15 01:34:02,746 [INFO] agents.reporter — Scripts report saved: reports\scripts_20260315_013402.csv
+2026-03-15 01:34:02,746 [INFO] agents.reporter — Exporting scripts to Notion...
+2026-03-15 01:34:11,559 [INFO] httpx — HTTP Request: POST https://api.notion.com/v1/pages "HTTP/1.1 200 OK"
+2026-03-15 01:34:11,560 [INFO] agents.notion_exporter — Successfully created Notion page for 'Blog': https://www.notion.so/Blog-32358cc99f8c81638443ee4c322c74d5
+2026-03-15 01:34:12,244 [INFO] httpx — HTTP Request: POST https://api.notion.com/v1/pages "HTTP/1.1 200 OK"
+2026-03-15 01:34:12,244 [INFO] agents.notion_exporter — Successfully created Notion page for 'Healthcare Voice AI Agents Guide 2026: Complete Playbook': https://www.notion.so/Healthcare-Voice-AI-Agents-Guide-2026-Complete-Playbook-32358cc99f8c8180aeafdee7a24bf87e
+2026-03-15 01:34:13,564 [INFO] httpx — HTTP Request: POST https://api.notion.com/v1/pages "HTTP/1.1 200 OK"
+2026-03-15 01:34:13,565 [INFO] agents.notion_exporter — Successfully created Notion page for 'AI Agent Demo: New Patient Intake Scheduling Guide (2026)': https://www.notion.so/AI-Agent-Demo-New-Patient-Intake-Scheduling-Guide-2026-32358cc99f8c812da0e0f02ef866a6b2
+2026-03-15 01:34:13,565 [INFO] agents.reporter — Saving full JSON report...
+2026-03-15 01:34:13,566 [INFO] agents.reporter — JSON report saved: reports\full_report_20260315_013402.json
+2026-03-15 01:34:13,566 [INFO] agents.reporter — Sending Slack report...
+2026-03-15 01:34:13,566 [WARNING] agents.reporter — SLACK_WEBHOOK_URL not set — skipping Slack notification. Set this in your .env file to enable Slack reporting.
+2026-03-15 01:34:13,566 [INFO] agents.reporter — 
+==================================================
+CONTENT GAP AGENT — RUN COMPLETE
+==================================================
+Timestamp:         20260315_013402
+Gaps found:        51
+Scripts generated: 3
+Gaps CSV:          reports\gap_report_20260315_013402.csv
+Scripts CSV:       reports\scripts_20260315_013402.csv
+JSON Report:       reports\full_report_20260315_013402.json
+Notion Exports:    3
+Slack sent:        False
+==================================================
+2026-03-15 01:34:13,566 [INFO] __main__ — 
+=================================================================
+  CONTENT GAP AGENT — COMPLETE
+  Run started : 2026-03-15 01:29:54
+  Elapsed     : 259.2s
+=================================================================
+  crawl              own=5 pages | Prosper AI=51
+  gap_analysis       51 gaps found, top 3 ranked
+  scripts            3/3 scripts generated
+  report             gaps_csv=reports\gap_report_20260315_013402.csv | scripts_csv=reports\scripts_20260315_013402.csv | slack=skipped
+=================================================================
+
