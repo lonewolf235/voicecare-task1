@@ -35,4 +35,4 @@ notion-client>=2.2.1
 python-dotenv>=1.0.0
 
 beautifulsoup4
-lxm
+lxml
