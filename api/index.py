@@ -843,7 +843,12 @@ def index():
 def run_strategy():
     """SSE endpoint: starts main.py, streams every stdout/stderr line."""
     dry_run = request.args.get("dry", "1") == "1"
-
+    if not (AGENT_DIR / "main.py").exists():
+        yield "data: " + json.dumps({
+            "type": "log",
+            "text": "ERROR: main.py not found"
+        }) + "\n\n"
+        return
     def generate():
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
