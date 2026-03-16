@@ -1,6 +1,6 @@
 """
 VoiceCare.ai — The Content Gap Agent
-Flask web server for Vercel deployment.
+Flask web server for Render deployment.
 
 Routes:
   GET  /          → Main UI (VoiceCare.ai branded, Run Strategy button, live terminal)
@@ -23,8 +23,8 @@ app = Flask(__name__)
 # ── Paths ──────────────────────────────────────────────────────────────────
 ROOT_DIR = Path(__file__).parent.parent
 AGENT_DIR = ROOT_DIR / "content-gap-agent"
-IS_VERCEL = bool(os.environ.get("VERCEL"))
-REPORTS_DIR = Path("/tmp/reports") if IS_VERCEL else AGENT_DIR / "reports"
+IS_RENDER = bool(os.environ.get("RENDER"))
+REPORTS_DIR = Path("/tmp/reports") if IS_RENDER else AGENT_DIR / "reports"
 
 # ── Main Page HTML ─────────────────────────────────────────────────────────
 INDEX_HTML = """<!DOCTYPE html>

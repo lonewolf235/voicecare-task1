@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: voicecare-content-gap-agent
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn api.index:app --bind 0.0.0.0:$PORT --worker-class gevent --workers 2 --timeout 300
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      # ── Add your real API keys in the Render dashboard ──
+      # These placeholders show which env vars the app expects.
+      # You can also set them via Render Dashboard > Environment instead.
+      - key: OPENAI_API_KEY
+        value: "sk-placeholder-replace-me"
+      - key: FIRECRAWL_API_KEY
+        value: "fc-placeholder-replace-me"
+      - key: NOTION_API_KEY
+        value: "ntn-placeholder-replace-me"
+      - key: SLACK_WEBHOOK_URL
+        value: "https://hooks.slack.com/services/placeholder"

@@ -1,8 +1,10 @@
 # VoiceCare.ai — Content Gap Agent
-# Root requirements.txt used by Vercel and local dev
+# Root requirements.txt used by Render and local dev
 
 # Web server
 flask>=3.0.0
+gunicorn>=21.2.0       # Production WSGI server for Render
+gevent>=24.2.1         # Async worker class for SSE streaming
 a2wsgi>=1.10.0         # WSGI→ASGI bridge for uvicorn local dev
 uvicorn>=0.29.0        # Local dev server
 
