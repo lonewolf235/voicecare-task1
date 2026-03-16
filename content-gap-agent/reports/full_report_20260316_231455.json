@@ -1,0 +1,260 @@
+{
+  "run_timestamp": "20260316_231455",
+  "gap_analysis": {
+    "total_gaps_found": 51,
+    "analysis_date": "2026-03-16",
+    "summary": "Found 51 content gaps. Top topic: 'Blog'",
+    "top_gaps": [
+      {
+        "rank": 1,
+        "topic": "Blog",
+        "gap_description": "Competitor covers this; our site similarity score 10.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 10.0,
+          "novelty": 5.0,
+          "viral": 4.0,
+          "priority_score": 7.3
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 27100,
+          "novelty_score": 5.0,
+          "viral_score": 4.0,
+          "final_score": 7.3
+        }
+      },
+      {
+        "rank": 2,
+        "topic": "Healthcare Voice AI Agents Guide 2026: Complete Playbook",
+        "gap_description": "Competitor covers this; our site similarity score 1.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 1.0,
+          "novelty": 7.0,
+          "viral": 5.8,
+          "priority_score": 3.76
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 0,
+          "novelty_score": 7.0,
+          "viral_score": 5.8,
+          "final_score": 3.76
+        }
+      },
+      {
+        "rank": 3,
+        "topic": "AI Agent Demo: New Patient Intake Scheduling Guide (2026)",
+        "gap_description": "Competitor covers this; our site similarity score 1.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 1.0,
+          "novelty": 6.0,
+          "viral": 5.8,
+          "priority_score": 3.46
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 0,
+          "novelty_score": 6.0,
+          "viral_score": 5.8,
+          "final_score": 3.46
+        }
+      }
+    ]
+  },
+  "scripts": [
+    {
+      "topic": "Blog",
+      "minto_thesis": "Voicecare.ai's AI voice agents reduce patient no-shows by leveraging intelligent reminders and HIPAA-compliant triage.",
+      "hook": {
+        "text": "Your clinic is losing patients, and it doesn\u2019t have to.",
+        "duration_seconds": 4,
+        "visual_suggestion": "Animated image of disappearing patients",
+        "pyramid_role": "governing conclusion"
+      },
+      "scene_1": {
+        "text": "Missed calls and no-shows cripple your schedule. It's avoidable.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Footage of empty waiting room and ringing phones",
+        "pyramid_role": "urgency -- why conclusion matters"
+      },
+      "scene_2": {
+        "text": "AI voice agents handle 62% of calls without human staff. Effortlessly.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graphics showing AI handling calls",
+        "pyramid_role": "key argument 1 -- strongest supporting idea"
+      },
+      "scene_3": {
+        "text": "Calls are triaged, appointments booked, reminders sent in seconds.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Timeline of an AI handling tasks",
+        "pyramid_role": "key argument 2 -- mechanism/how"
+      },
+      "scene_4": {
+        "text": "Cut no-shows by 40% in 90 days, with just AI support.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graph dropping no-show rates",
+        "pyramid_role": "evidence -- concrete proof"
+      },
+      "scene_5": {
+        "text": "Clinics of the future never make patients wait. Don't get left behind.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Futuristic clinic environment",
+        "pyramid_role": "synthesis -- forward-looking so-what"
+      },
+      "cta": {
+        "text": "Ready to transform patient care? Book a demo at voicecare.ai/demo.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Website URL and demo button",
+        "pyramid_role": "conversion -- single clear action"
+      },
+      "full_script": "[HOOK] Your clinic is losing patients, and it doesn\u2019t have to. [SCENE 1] Missed calls and no-shows cripple your schedule. It's avoidable. [SCENE 2] AI voice agents handle 62% of calls without human staff. Effortlessly. [SCENE 3] Calls are triaged, appointments booked, reminders sent in seconds. [SCENE 4] Cut no-shows by 40% in 90 days, with just AI support. [SCENE 5] Clinics of the future never make patients wait. Don't get left behind. [CTA] Ready to transform patient care? Book a demo at voicecare.ai/demo.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#HealthcareAI",
+        "#VoiceTech",
+        "#ClinicSolutions",
+        "#PatientCare",
+        "#NoShowReduction"
+      ],
+      "caption": "Reducing no-shows and missed calls has never been easier. Explore how at Voicecare.ai/demo.",
+      "thumbnail_text": "Stop Losing Patients Today",
+      "generated_at": "2026-03-16T23:14:06.702119",
+      "company": "Voicecare.ai",
+      "output_file": "outputs\\week_2026-03-16.json",
+      "notion_url": "https://www.notion.so/Blog-32558cc99f8c81459008d5096ef74f69"
+    },
+    {
+      "topic": "Healthcare Voice AI Agents Guide 2026: Complete Playbook",
+      "minto_thesis": "Voice AI agents are the key to efficient patient management by 2026.",
+      "hook": {
+        "text": "By 2026, your competitor could answer every call before you do.",
+        "duration_seconds": 4,
+        "visual_suggestion": "Split-screen: Busy clinic vs. efficient AI-managed clinic",
+        "pyramid_role": "governing conclusion"
+      },
+      "scene_1": {
+        "text": "Missed calls mean missed patients. Each lost call can cost you thousands.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Ringing phone left unanswered, patient looking frustrated",
+        "pyramid_role": "urgency \u00e2\u20ac\u201d why conclusion matters"
+      },
+      "scene_2": {
+        "text": "Voice AI can handle the 60% of calls that need no human touch.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graphic showing call distribution: AI vs. human",
+        "pyramid_role": "key argument 1 \u00e2\u20ac\u201d strongest supporting idea"
+      },
+      "scene_3": {
+        "text": "Here's how it works: AI answers, triages, and schedules in seconds.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Step-by-step animation of call flow with AI",
+        "pyramid_role": "key argument 2 \u00e2\u20ac\u201d mechanism/how"
+      },
+      "scene_4": {
+        "text": "A clinic cut no-shows by 45% in 3 months using Voice AI.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graph showing decrease in no-shows over time",
+        "pyramid_role": "evidence \u00e2\u20ac\u201d concrete proof"
+      },
+      "scene_5": {
+        "text": "2026 clinics that thrive will never leave a patient waiting.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Busy, efficient clinic with happy patients",
+        "pyramid_role": "synthesis \u00e2\u20ac\u201d forward-looking so-what"
+      },
+      "cta": {
+        "text": "Link in bio to see how we can support your clinic today.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Call-to-action button with 'Learn More'",
+        "pyramid_role": "conversion \u00e2\u20ac\u201d single clear action"
+      },
+      "full_script": "[HOOK] By 2026, your competitor could answer every call before you do. [SCENE 1] Missed calls mean missed patients. Each lost call can cost you thousands. [SCENE 2] Voice AI can handle the 60% of calls that need no human touch. [SCENE 3] Here's how it works: AI answers, triages, and schedules in seconds. [SCENE 4] A clinic cut no-shows by 45% in 3 months using Voice AI. [SCENE 5] 2026 clinics that thrive will never leave a patient waiting. [CTA] Link in bio to see how we can support your clinic today.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#HealthcareAI",
+        "#VoiceAI",
+        "#PatientCare",
+        "#ClinicEfficiency",
+        "#FutureOfHealthcare"
+      ],
+      "caption": "Boost clinic efficiency with Voice AI by 2026. Don't let missed calls cost you.",
+      "thumbnail_text": "Answer Every Call",
+      "gap_rank": 2,
+      "priority_score": 3.76,
+      "covered_by_competitors": [],
+      "suggested_format": "video",
+      "notion_url": "https://www.notion.so/Healthcare-Voice-AI-Agents-Guide-2026-Complete-Playbook-32558cc99f8c81bd93e2da42e91a0387"
+    },
+    {
+      "topic": "AI Agent Demo: New Patient Intake Scheduling Guide (2026)",
+      "minto_thesis": "AI agents can revolutionize patient intake scheduling, saving you time and reducing no-shows.",
+      "hook": {
+        "text": "Your clinic loses hundreds of hours on phone calls each year!",
+        "duration_seconds": 4,
+        "visual_suggestion": "Animated clock ticking rapidly.",
+        "pyramid_role": "governing conclusion"
+      },
+      "scene_1": {
+        "text": "Missed calls lead to lost patients. Frustrated staff. Endless chaos.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Overworked staff with ringing phones.",
+        "pyramid_role": "urgency \u00e2\u20ac\u201d why conclusion matters"
+      },
+      "scene_2": {
+        "text": "AI agents can streamline your intake. No more bottlenecks.",
+        "duration_seconds": 9,
+        "visual_suggestion": "AI interface smoothly handling multiple inquiries.",
+        "pyramid_role": "key argument 1 \u00e2\u20ac\u201d strongest supporting idea"
+      },
+      "scene_3": {
+        "text": "Patient calls in -> AI greets -> Schedules in seconds.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Visual flow of call process with AI handling.",
+        "pyramid_role": "key argument 2 \u00e2\u20ac\u201d mechanism/how"
+      },
+      "scene_4": {
+        "text": "Clinic A saw a 50% drop in no-shows in just 3 months.",
+        "duration_seconds": 9,
+        "visual_suggestion": "Graph showing no-show rates declining.",
+        "pyramid_role": "evidence \u00e2\u20ac\u201d concrete proof"
+      },
+      "scene_5": {
+        "text": "Embrace AI today. Tomorrow's winning clinics already have.",
+        "duration_seconds": 8,
+        "visual_suggestion": "Future-facing clinic with satisfied patients.",
+        "pyramid_role": "synthesis \u00e2\u20ac\u201d forward-looking so-what"
+      },
+      "cta": {
+        "text": "Book a free demo now. Link in bio.",
+        "duration_seconds": 7,
+        "visual_suggestion": "Clickable link with demo text.",
+        "pyramid_role": "conversion \u00e2\u20ac\u201d single clear action"
+      },
+      "full_script": "[HOOK] Your clinic loses hundreds of hours on phone calls each year! [SCENE 1] Missed calls lead to lost patients. Frustrated staff. Endless chaos. [SCENE 2] AI agents can streamline your intake. No more bottlenecks. [SCENE 3] Patient calls in -> AI greets -> Schedules in seconds. [SCENE 4] Clinic A saw a 50% drop in no-shows in just 3 months. [SCENE 5] Embrace AI today. Tomorrow's winning clinics already have. [CTA] Book a free demo now. Link in bio.",
+      "total_duration_seconds": 60,
+      "hashtags": [
+        "#HealthcareAI",
+        "#PatientIntake",
+        "#ClinicEfficiency",
+        "#AIinHealthcare",
+        "#NoShowReduction"
+      ],
+      "caption": "Revolutionize your patient intake with AI. Discover how today!",
+      "thumbnail_text": "Boost Clinic Efficiency!",
+      "gap_rank": 3,
+      "priority_score": 3.46,
+      "covered_by_competitors": [],
+      "suggested_format": "video",
+      "notion_url": "https://www.notion.so/AI-Agent-Demo-New-Patient-Intake-Scheduling-Guide-2026-32558cc99f8c811a984fcb209c968ea7"
+    }
+  ]
+}

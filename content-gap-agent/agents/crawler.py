@@ -1,22 +1,13 @@
 """
-crawler.py - Firecrawl v4 SDK web scraper for competitor and own-site content.
-
-Firecrawl v4 API (firecrawl-py >= 2.0):
-  app.crawl(url, ...)            → CrawlJob  (synchronous, polls until done)
-  app.get_crawl_status_page(url) → CrawlJob  (pagination follow-up)
-  CrawlJob.data                  → List[Document]
-  Document.markdown              → str  (page text)
-  Document.metadata              → DocumentMetadata (typed object, snake_case attrs)
-  DocumentMetadata.source_url    → page URL
-  DocumentMetadata.published_time → publish date
+crawler.py - Firecrawl-based web scraper for competitor and own-site content.
 
 Public API (used by main.py):
   scrape_competitor(url)  → list[{title, content, url, date}]
   scrape_own_site(url)    → list[{title, content, url, date}]
 
-Internal batch API (used by run_crawler):
-  crawl_site(...)
-  run_crawler(config_path)
+Internal batch API (used by run_crawler for full-config crawls):
+  crawl_site(...)         → list of enriched page dicts
+  run_crawler(config)     → {own_site: [...], competitors: {...}}
 """
 
 import os
@@ -24,27 +15,28 @@ import time
 import json
 import hashlib
 import logging
+from datetime import datetime
 from typing import Any
 from urllib.parse import urlparse
 
 import yaml
 from firecrawl import FirecrawlApp
-from firecrawl.v2.types import ScrapeOptions, Document, DocumentMetadata
 
 logger = logging.getLogger(__name__)
 
+# Date metadata fields Firecrawl may populate (checked in order)
+_DATE_FIELDS = [
+    "publishedTime",
+    "ogPublishedTime",
+    "datePublished",
+    "article:published_time",
+    "modifiedTime",
+    "ogModifiedTime",
+]
+
 _DEFAULT_MAX_PAGES = 50
 _DEFAULT_MAX_DEPTH = 2
-_DEFAULT_TIMEOUT_S = 120  # Firecrawl v4 timeout is in seconds
-
-# DocumentMetadata date fields checked in priority order (snake_case v4 names)
-_DATE_FIELDS = [
-    "published_time",
-    "modified_time",
-    "dc_terms_created",
-    "dc_date_created",
-    "dc_date",
-]
+_DEFAULT_TIMEOUT_MS = 30_000  # Firecrawl uses milliseconds
 
 
 # ---------------------------------------------------------------------------
@@ -64,14 +56,13 @@ def _clean_text(text: str | None) -> str:
     return " ".join(text.split()).strip()
 
 
-def _extract_date(meta: DocumentMetadata | None) -> str:
-    """Extract the earliest available publish date from DocumentMetadata."""
-    if meta is None:
-        return ""
+def _extract_date(metadata: dict) -> str:
+    """Extract the best available publish date from page metadata."""
     for field in _DATE_FIELDS:
-        val = getattr(meta, field, None)
+        val = metadata.get(field, "")
         if val:
-            return str(val)[:10]  # normalise to YYYY-MM-DD
+            # Normalise to YYYY-MM-DD; handle ISO timestamps
+            return str(val)[:10]
     return ""
 
 
@@ -80,41 +71,22 @@ def _should_skip(url: str, exclude_keywords: list[str]) -> bool:
     return any(kw.lower() in path for kw in exclude_keywords)
 
 
-def _doc_to_page(
-    doc: Document,
-    site_name: str,
-    base_url: str,
-    exclude_keywords: list[str],
-) -> dict[str, Any] | None:
-    """
-    Convert a Firecrawl v4 Document object to our standard page dict.
-    Returns None if the page should be skipped.
-    """
-    meta: DocumentMetadata | None = doc.metadata
+def _pages_from_result(result: Any, base_url: str) -> list[dict]:
+    """Extract the raw page list from a Firecrawl crawl response (SDK v0 or v1)."""
+    if isinstance(result, dict):
+        return result.get("data", [])
+    # SDK v1 returns an object with a .data attribute
+    data = getattr(result, "data", None)
+    if data is not None:
+        return list(data)
+    return []
 
-    page_url = (meta.source_url or meta.url or base_url) if meta else base_url
 
-    if _should_skip(page_url, exclude_keywords):
-        logger.debug(f"Skipping excluded URL: {page_url}")
-        return None
-
-    content = _clean_text(doc.markdown or "")
-    title = _clean_text(meta.title if meta else "")
-    description = _clean_text(meta.description if meta else "")
-    date = _extract_date(meta)
-
-    if not content and not title:
-        return None
-
-    return {
-        "site_name": site_name,
-        "url": page_url,
-        "title": title,
-        "description": description,
-        "content": content,
-        "date": date,
-        "word_count": len(content.split()),
-    }
+def _next_cursor(result: Any) -> str | None:
+    """Return the pagination cursor/URL if the crawl has more pages."""
+    if isinstance(result, dict):
+        return result.get("next") or result.get("nextPage")
+    return getattr(result, "next", None) or getattr(result, "nextPage", None)
 
 
 # ---------------------------------------------------------------------------
@@ -126,18 +98,15 @@ def _crawl_with_pagination(
     url: str,
     max_depth: int,
     max_pages: int,
-    timeout_s: int,
+    timeout_ms: int,
     exclude_keywords: list[str],
-) -> list[Document]:
+) -> list[dict[str, Any]]:
     """
-    Crawl a URL using Firecrawl v4 app.crawl() and follow pagination cursors.
+    Crawl a URL and follow pagination cursors until max_pages is reached.
 
-    app.crawl() is synchronous — it polls until the job is complete and returns
-    a CrawlJob with .data (List[Document]) and an optional .next cursor URL.
-    If .next is set, we fetch further pages via app.get_crawl_status_page().
+    Firecrawl's synchronous `crawl_url` returns up to `limit` pages per call.
+    If the response carries a `next` cursor we follow it to gather more pages.
     """
-    # Convert exclude keywords to path-fragment patterns Firecrawl understands
-    exclude_paths = [f"*{kw}*" for kw in exclude_keywords] if exclude_keywords else None
     all_raw: list[dict[str, Any]] = []
     current_url = url
     first_call = True
@@ -213,34 +182,9 @@ def _crawl_with_pagination(
             break
         current_url = cursor
 
-    scrape_opts = ScrapeOptions(
-        formats=["markdown"],
-        only_main_content=True,
-    )
+    return all_raw[:max_pages]
 
-    # First synchronous crawl
-    result = app.crawl(
-        url,
-        limit=max_pages,
-        max_discovery_depth=max_depth,
-        exclude_paths=exclude_paths,
-        scrape_options=scrape_opts,
-        timeout=timeout_s,
-    )
 
-    all_docs: list[Document] = list(result.data or [])
-
-    # Follow pagination cursors for large sites
-    next_url: str | None = result.next
-    while next_url and len(all_docs) < max_pages:
-        page_result = app.get_crawl_status_page(next_url)
-        page_docs = list(page_result.data or [])
-        if not page_docs:
-            break
-        all_docs.extend(page_docs)
-        next_url = page_result.next
-
-    return all_docs[:max_pages]
 def _parse_pages(
     raw_pages: list[dict],
     site_name: str,
@@ -304,17 +248,18 @@ def _parse_pages(
 
 
 # ---------------------------------------------------------------------------
-# Public API: single-URL entry points (called by main.py)
+# Public API: single-URL entry points (used by main.py)
 # ---------------------------------------------------------------------------
 
 def scrape_competitor(url: str) -> list[dict[str, Any]]:
     """
-    Crawl all blog/content pages from a competitor URL.
+    Crawl all blog posts and LinkedIn posts from a competitor URL.
 
-    Uses Firecrawl v4 app.crawl() with markdown extraction and pagination.
+    Handles Firecrawl pagination automatically, following `next` cursors
+    until `_DEFAULT_MAX_PAGES` is reached or no more pages exist.
 
     Args:
-        url: The competitor's content root URL (e.g. https://syllable.ai/blog).
+        url: The competitor's blog/content root URL.
 
     Returns:
         List of dicts: [{title, content, url, date}, ...]
@@ -326,21 +271,23 @@ def scrape_competitor(url: str) -> list[dict[str, Any]]:
     exclude = ["careers", "jobs", "privacy", "terms", "contact", "login", "signup"]
 
     try:
-        docs = _crawl_with_pagination(
+        raw = _crawl_with_pagination(
             app=app,
             url=url,
             max_depth=_DEFAULT_MAX_DEPTH,
             max_pages=_DEFAULT_MAX_PAGES,
-            timeout_s=_DEFAULT_TIMEOUT_S,
+            timeout_ms=_DEFAULT_TIMEOUT_MS,
             exclude_keywords=exclude,
         )
-        pages = [
-            p for doc in docs
-            if (p := _doc_to_page(doc, site_name, url, exclude)) is not None
-        ]
+        pages = _parse_pages(raw, site_name=site_name, base_url=url, exclude_keywords=exclude)
         logger.info(f"[competitor] {site_name}: {len(pages)} pages scraped.")
         return [
-            {"title": p["title"], "content": p["content"], "url": p["url"], "date": p["date"]}
+            {
+                "title": p["title"],
+                "content": p["content"],
+                "url": p["url"],
+                "date": p["date"],
+            }
             for p in pages
         ]
     except Exception as e:
@@ -350,9 +297,9 @@ def scrape_competitor(url: str) -> list[dict[str, Any]]:
 
 def scrape_own_site(url: str) -> list[dict[str, Any]]:
     """
-    Crawl all blog/content pages from Voicecare.ai (own site).
+    Crawl all blog/content pages from voicecare.ai (own site).
 
-    Uses Firecrawl v4 app.crawl() with markdown extraction and pagination.
+    Handles Firecrawl pagination automatically.
 
     Args:
         url: The own site's content root URL (e.g. https://voicecare.ai/blog).
@@ -367,21 +314,23 @@ def scrape_own_site(url: str) -> list[dict[str, Any]]:
     exclude = ["careers", "jobs", "privacy", "terms", "contact", "login", "signup"]
 
     try:
-        docs = _crawl_with_pagination(
+        raw = _crawl_with_pagination(
             app=app,
             url=url,
             max_depth=_DEFAULT_MAX_DEPTH,
             max_pages=_DEFAULT_MAX_PAGES,
-            timeout_s=_DEFAULT_TIMEOUT_S,
+            timeout_ms=_DEFAULT_TIMEOUT_MS,
             exclude_keywords=exclude,
         )
-        pages = [
-            p for doc in docs
-            if (p := _doc_to_page(doc, site_name, url, exclude)) is not None
-        ]
+        pages = _parse_pages(raw, site_name=site_name, base_url=url, exclude_keywords=exclude)
         logger.info(f"[own_site] {site_name}: {len(pages)} pages scraped.")
         return [
-            {"title": p["title"], "content": p["content"], "url": p["url"], "date": p["date"]}
+            {
+                "title": p["title"],
+                "content": p["content"],
+                "url": p["url"],
+                "date": p["date"],
+            }
             for p in pages
         ]
     except Exception as e:
@@ -390,7 +339,7 @@ def scrape_own_site(url: str) -> list[dict[str, Any]]:
 
 
 # ---------------------------------------------------------------------------
-# Internal batch API (used by run_crawler for full-config crawls)
+# Batch API: full-config crawl (used by run_crawler)
 # ---------------------------------------------------------------------------
 
 def load_sites_config(config_path: str = "config/sites.yaml") -> dict:
@@ -409,7 +358,7 @@ def crawl_site(
     pages: list[dict[str, Any]] = []
     max_pages = crawl_settings.get("max_pages_per_site", _DEFAULT_MAX_PAGES)
     max_depth = crawl_settings.get("max_depth", _DEFAULT_MAX_DEPTH)
-    timeout_s = crawl_settings.get("timeout_seconds", _DEFAULT_TIMEOUT_S)
+    timeout_ms = crawl_settings.get("timeout_seconds", 30) * 1000
 
     from pathlib import Path
     
@@ -434,18 +383,16 @@ def crawl_site(
 
         logger.info(f"[{site_name}] Crawling: {base_url}")
         try:
-            docs = _crawl_with_pagination(
+            raw = _crawl_with_pagination(
                 app=app,
                 url=base_url,
                 max_depth=max_depth,
                 max_pages=max_pages,
-                timeout_s=timeout_s,
+                timeout_ms=timeout_ms,
                 exclude_keywords=exclude_keywords,
             )
-            batch = [
-                p for doc in docs
-                if (p := _doc_to_page(doc, site_name, base_url, exclude_keywords)) is not None
-            ]
+            batch = _parse_pages(raw, site_name=site_name, base_url=base_url,
+                                  exclude_keywords=exclude_keywords)
             pages.extend(batch)
             logger.info(f"[{site_name}] +{len(batch)} pages from {base_url}")
             
@@ -471,7 +418,10 @@ def run_crawler(config_path: str = "config/sites.yaml") -> dict[str, Any]:
     Full-config entry point. Crawls own site and all competitors defined in sites.yaml.
 
     Returns:
-        {"own_site": [page_records...], "competitors": {"Name": [page_records...], ...}}
+        {
+            "own_site": [page_records...],
+            "competitors": {"Competitor A": [page_records...], ...}
+        }
     """
     app = _get_app()
     config = load_sites_config(config_path)
@@ -500,6 +450,7 @@ def run_crawler(config_path: str = "config/sites.yaml") -> dict[str, Any]:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    # Quick test of the new API
     import json
     pages = scrape_own_site("https://voicecare.ai/blog")
     print(json.dumps(pages[:2], indent=2))

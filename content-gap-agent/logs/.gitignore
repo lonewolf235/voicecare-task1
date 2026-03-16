@@ -1,5 +1,0 @@
-# Ignore all log files but keep the directory tracked
-*.log
-*.txt
-!.gitkeep
-!.gitignore

@@ -16,7 +16,7 @@ Usage:
     python scheduler.py --day friday --time 09:30
 
     # Pass extra flags through to main.py:
-    python scheduler.py --skip-slack
+    python scheduler.py --dry-run
     python scheduler.py --skip-slack --max-scripts 5
 """
 
@@ -189,6 +189,8 @@ def parse_args() -> argparse.Namespace:
                         help="Passed to main.py --max-scripts")
     parser.add_argument("--skip-slack", action="store_true",
                         help="Passed to main.py --skip-slack")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Passed to main.py --dry-run (mock data, no real API calls)")
     parser.add_argument("--save-crawl", action="store_true",
                         help="Passed to main.py --save-crawl")
     return parser.parse_args()
@@ -201,6 +203,8 @@ def _build_main_args(args: argparse.Namespace) -> list[str]:
     ]
     if args.skip_slack:
         main_args.append("--skip-slack")
+    if args.dry_run:
+        main_args.append("--dry-run")
     if args.save_crawl:
         main_args.append("--save-crawl")
     return main_args

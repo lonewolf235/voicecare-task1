@@ -1,0 +1,74 @@
+{
+  "run_timestamp": "20260316_230726",
+  "gap_analysis": {
+    "total_gaps_found": 51,
+    "analysis_date": "2026-03-16",
+    "summary": "Found 51 content gaps. Top topic: 'Blog'",
+    "top_gaps": [
+      {
+        "rank": 1,
+        "topic": "Blog",
+        "gap_description": "Competitor covers this; our site similarity score 10.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 10.0,
+          "novelty": 5.0,
+          "viral": 4.0,
+          "priority_score": 7.3
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 27100,
+          "novelty_score": 5.0,
+          "viral_score": 4.0,
+          "final_score": 7.3
+        }
+      },
+      {
+        "rank": 2,
+        "topic": "Healthcare Voice AI Agents Guide 2026: Complete Playbook",
+        "gap_description": "Competitor covers this; our site similarity score 1.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 1.0,
+          "novelty": 7.0,
+          "viral": 5.8,
+          "priority_score": 3.76
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 0,
+          "novelty_score": 7.0,
+          "viral_score": 5.8,
+          "final_score": 3.76
+        }
+      },
+      {
+        "rank": 3,
+        "topic": "AI Agent Demo: New Patient Intake Scheduling Guide (2026)",
+        "gap_description": "Competitor covers this; our site similarity score 1.00",
+        "covered_by_competitors": [],
+        "our_coverage": "none",
+        "recommended_angle": "",
+        "scores": {
+          "search_demand": 1.0,
+          "novelty": 6.0,
+          "viral": 5.8,
+          "priority_score": 3.46
+        },
+        "suggested_format": "video",
+        "_semrush": {
+          "search_volume": 0,
+          "novelty_score": 6.0,
+          "viral_score": 5.8,
+          "final_score": 3.46
+        }
+      }
+    ]
+  },
+  "scripts": []
+}

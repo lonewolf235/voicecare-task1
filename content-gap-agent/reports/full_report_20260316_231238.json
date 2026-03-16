@@ -1,0 +1,45 @@
+{
+  "run_timestamp": "20260316_231238",
+  "gap_analysis": {
+    "top_gaps": [
+      {
+        "rank": 1,
+        "topic": "HIPAA-Compliant Voice AI for Clinics",
+        "gap_description": "No compliance guide on our site. Competitors cover this in depth.",
+        "covered_by_competitors": [
+          "Competitor B"
+        ],
+        "our_coverage": "none",
+        "recommended_angle": "Step-by-step HIPAA checklist for deploying voice AI",
+        "scores": {
+          "search_demand": 8,
+          "competitive_pressure": 7,
+          "strategic_fit": 9,
+          "priority_score": 8.1
+        },
+        "suggested_format": "video"
+      },
+      {
+        "rank": 2,
+        "topic": "Reducing No-Shows with AI Reminders",
+        "gap_description": "Competitors show 40% no-show reduction stats. We have no content on this.",
+        "covered_by_competitors": [
+          "Competitor A"
+        ],
+        "our_coverage": "none",
+        "recommended_angle": "The 3 types of reminder touchpoints that actually work",
+        "scores": {
+          "search_demand": 7,
+          "competitive_pressure": 8,
+          "strategic_fit": 8,
+          "priority_score": 7.7
+        },
+        "suggested_format": "video"
+      }
+    ],
+    "total_gaps_found": 2,
+    "analysis_date": "2026-03-16",
+    "summary": "Competitors lead on compliance and outcomes content. Two high-priority gaps found."
+  },
+  "scripts": []
+}

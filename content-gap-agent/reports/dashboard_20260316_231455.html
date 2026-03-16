@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Gap Report | VoiceCare.ai</title>
+<style>
+  :root {
+    --bg: #070b14; --surface: #0e1524; --surface2: #162035;
+    --primary: #00d4aa; --text: #e8f1ff; --muted: #6b7a99;
+    --border: #1e2d4d;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 18px 40px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-size: 22px; font-weight: 800; }
+  .logo-dot { color: var(--primary); }
+  .logo-tag { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .date-badge {
+    background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3);
+    color: var(--primary); border-radius: 999px; padding: 4px 16px; font-size: 13px;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 40px 24px 60px; }
+  .summary-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px; margin-bottom: 36px;
+  }
+  .summary-title { font-size: 20px; font-weight: 700; margin-bottom: 14px; color: var(--primary); }
+  .meta-row {
+    display: flex; gap: 24px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .meta-val { font-size: 20px; font-weight: 700; color: var(--text); }
+  .summary-text { color: var(--muted); line-height: 1.6; }
+  .section-header {
+    font-size: 22px; font-weight: 700; margin-bottom: 22px;
+    background: linear-gradient(90deg, var(--primary), #6366f1);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 28px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card-header {
+    padding: 22px 28px; display: flex; align-items: center; gap: 16px;
+    color: #fff;
+  }
+  .rank {
+    font-size: 32px; font-weight: 900; opacity: 0.9; flex-shrink: 0;
+    background: rgba(0,0,0,0.2); border-radius: 10px;
+    width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+  }
+  .card-meta { flex: 1; }
+  .card-topic { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .card-competitor { font-size: 12px; opacity: 0.8; }
+  .score-badge {
+    background: rgba(0,0,0,0.25); border-radius: 10px;
+    padding: 8px 14px; font-size: 18px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .card-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; }
+  .score-row { display: flex; align-items: center; gap: 10px; }
+  .score-row > span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .score-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 3px; }
+  .angle { font-size: 13px; color: var(--muted); padding: 10px 14px; background: var(--surface2); border-radius: 8px; border-left: 3px solid var(--primary); }
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .hook-text {
+    border-left: 3px solid var(--primary); padding: 12px 18px;
+    background: rgba(0,212,170,0.06); border-radius: 0 8px 8px 0;
+    font-size: 16px; font-style: italic; line-height: 1.6; color: var(--text);
+  }
+  .toggle-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--primary); padding: 8px 18px; border-radius: 8px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s; width: fit-content;
+  }
+  .toggle-btn:hover { background: rgba(0,212,170,0.1); }
+  .script-content {
+    background: #000308; border: 1px solid #1a2a1a; border-radius: 10px;
+    padding: 16px;
+  }
+  .script-content pre {
+    color: #00ff41; font-family: 'Courier New', monospace; font-size: 12px;
+    line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+  }
+  .caption {
+    background: var(--surface2); border-radius: 8px; padding: 12px 16px;
+    font-size: 14px; line-height: 1.6; color: var(--text);
+  }
+  .hashtags { display: flex; flex-wrap: wrap; gap: 0; }
+  .thumbnail {
+    font-size: 13px; color: var(--muted);
+    padding: 10px 14px; background: var(--surface2); border-radius: 8px;
+  }
+  .download-section {
+    text-align: center; padding: 32px 0 8px;
+  }
+  .dl-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary) 0%, #007a62 100%);
+    color: #000; font-weight: 700; font-size: 16px;
+    padding: 14px 40px; border-radius: 999px; text-decoration: none;
+    transition: all 0.2s; box-shadow: 0 4px 18px rgba(0,212,170,0.3);
+  }
+  .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,212,170,0.4); }
+  footer {
+    text-align: center; padding: 20px; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 13px; margin-top: 20px;
+  }
+  footer strong { color: var(--text); }
+  @media (max-width: 600px) {
+    header { padding: 14px 20px; flex-direction: column; gap: 10px; text-align: center; }
+    .card-header { flex-direction: column; text-align: center; }
+    main { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">Voice<span class="logo-dot">Care.ai</span></div>
+    <div class="logo-tag">The Content Gap Agent</div>
+  </div>
+  <div class="date-badge">Report: 2026-03-16</div>
+</header>
+<main>
+  <div class="summary-card">
+    <div class="summary-title">📊 Executive Summary</div>
+    <div class="meta-row">
+      <div class="meta-item"><span class="meta-label">Gaps Found</span><span class="meta-val">51</span></div>
+      <div class="meta-item"><span class="meta-label">Scripts Generated</span><span class="meta-val">3</span></div>
+      <div class="meta-item"><span class="meta-label">Analysis Date</span><span class="meta-val" style="font-size:15px;">2026-03-16</span></div>
+    </div>
+    <p class="summary-text">Found 51 content gaps. Top topic: 'Blog'</p>
+  </div>
+  <div class="section-header">🎬 Generated Content Posts</div>
+  
+        <div class="card">
+          <div class="card-header" style="background:linear-gradient(135deg,#00d4aa 0%,#007a62 100%);">
+            <div class="rank">#1</div>
+            <div class="card-meta">
+              <div class="card-topic">Blog</div>
+              
+            </div>
+            <div class="score-badge">7.3/10</div>
+          </div>
+          <div class="card-body">
+            <div class="score-row">
+              <span>Priority Score</span>
+              <div class="score-bar">
+                <div class="score-fill" style="width:73%;background:linear-gradient(90deg,#00d4aa,#007a62);"></div>
+              </div>
+              <span>7.3</span>
+            </div>
+            
+            <div class="section-title">🪝 Hook</div>
+            <blockquote class="hook-text">Your clinic is losing patients, and it doesn’t have to.</blockquote>
+            <div class="section-title">📜 Full Script</div>
+            <button class="toggle-btn" onclick="toggleScript('script0')">▾ Show Full Script</button>
+            <div class="script-content" id="script0" style="display:none">
+              <pre>[HOOK] Your clinic is losing patients, and it doesn’t have to. [SCENE 1] Missed calls and no-shows cripple your schedule. It's avoidable. [SCENE 2] AI voice agents handle 62% of calls without human staff. Effortlessly. [SCENE 3] Calls are triaged, appointments booked, reminders sent in seconds. [SCENE 4] Cut no-shows by 40% in 90 days, with just AI support. [SCENE 5] Clinics of the future never make patients wait. Don't get left behind. [CTA] Ready to transform patient care? Book a demo at voicecare.ai/demo.</pre>
+            </div>
+            <div class="section-title">📱 Social Caption</div><p class="caption">Reducing no-shows and missed calls has never been easier. Explore how at Voicecare.ai/demo.</p>
+            <div class="section-title">🏷 Hashtags</div><div class="hashtags"><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#HealthcareAI</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#VoiceTech</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#ClinicSolutions</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#PatientCare</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#NoShowReduction</span></div>
+            <div class="thumbnail">🖼 Thumbnail Text: <strong>Stop Losing Patients Today</strong></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:linear-gradient(135deg,#6366f1 0%,#4338ca 100%);">
+            <div class="rank">#2</div>
+            <div class="card-meta">
+              <div class="card-topic">Healthcare Voice AI Agents Guide 2026: Complete Playbook</div>
+              
+            </div>
+            <div class="score-badge">3.8/10</div>
+          </div>
+          <div class="card-body">
+            <div class="score-row">
+              <span>Priority Score</span>
+              <div class="score-bar">
+                <div class="score-fill" style="width:37%;background:linear-gradient(90deg,#6366f1,#4338ca);"></div>
+              </div>
+              <span>3.8</span>
+            </div>
+            
+            <div class="section-title">🪝 Hook</div>
+            <blockquote class="hook-text">By 2026, your competitor could answer every call before you do.</blockquote>
+            <div class="section-title">📜 Full Script</div>
+            <button class="toggle-btn" onclick="toggleScript('script1')">▾ Show Full Script</button>
+            <div class="script-content" id="script1" style="display:none">
+              <pre>[HOOK] By 2026, your competitor could answer every call before you do. [SCENE 1] Missed calls mean missed patients. Each lost call can cost you thousands. [SCENE 2] Voice AI can handle the 60% of calls that need no human touch. [SCENE 3] Here's how it works: AI answers, triages, and schedules in seconds. [SCENE 4] A clinic cut no-shows by 45% in 3 months using Voice AI. [SCENE 5] 2026 clinics that thrive will never leave a patient waiting. [CTA] Link in bio to see how we can support your clinic today.</pre>
+            </div>
+            <div class="section-title">📱 Social Caption</div><p class="caption">Boost clinic efficiency with Voice AI by 2026. Don't let missed calls cost you.</p>
+            <div class="section-title">🏷 Hashtags</div><div class="hashtags"><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#HealthcareAI</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#VoiceAI</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#PatientCare</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#ClinicEfficiency</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#FutureOfHealthcare</span></div>
+            <div class="thumbnail">🖼 Thumbnail Text: <strong>Answer Every Call</strong></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:linear-gradient(135deg,#f59e0b 0%,#b45309 100%);">
+            <div class="rank">#3</div>
+            <div class="card-meta">
+              <div class="card-topic">AI Agent Demo: New Patient Intake Scheduling Guide (2026)</div>
+              
+            </div>
+            <div class="score-badge">3.5/10</div>
+          </div>
+          <div class="card-body">
+            <div class="score-row">
+              <span>Priority Score</span>
+              <div class="score-bar">
+                <div class="score-fill" style="width:34%;background:linear-gradient(90deg,#f59e0b,#b45309);"></div>
+              </div>
+              <span>3.5</span>
+            </div>
+            
+            <div class="section-title">🪝 Hook</div>
+            <blockquote class="hook-text">Your clinic loses hundreds of hours on phone calls each year!</blockquote>
+            <div class="section-title">📜 Full Script</div>
+            <button class="toggle-btn" onclick="toggleScript('script2')">▾ Show Full Script</button>
+            <div class="script-content" id="script2" style="display:none">
+              <pre>[HOOK] Your clinic loses hundreds of hours on phone calls each year! [SCENE 1] Missed calls lead to lost patients. Frustrated staff. Endless chaos. [SCENE 2] AI agents can streamline your intake. No more bottlenecks. [SCENE 3] Patient calls in -&gt; AI greets -&gt; Schedules in seconds. [SCENE 4] Clinic A saw a 50% drop in no-shows in just 3 months. [SCENE 5] Embrace AI today. Tomorrow's winning clinics already have. [CTA] Book a free demo now. Link in bio.</pre>
+            </div>
+            <div class="section-title">📱 Social Caption</div><p class="caption">Revolutionize your patient intake with AI. Discover how today!</p>
+            <div class="section-title">🏷 Hashtags</div><div class="hashtags"><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#HealthcareAI</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#PatientIntake</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#ClinicEfficiency</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#AIinHealthcare</span><span style="background:rgba(255,255,255,0.12);border-radius:999px;padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">#NoShowReduction</span></div>
+            <div class="thumbnail">🖼 Thumbnail Text: <strong>Boost Clinic Efficiency!</strong></div>
+          </div>
+        </div>
+  <div class="download-section">
+    <a href="/download" class="dl-btn">⬇ &nbsp;Download Full Report (ZIP)</a>
+  </div>
+</main>
+<footer>Built by <strong>Shubham Anand</strong> &nbsp;&bull;&nbsp; VoiceCare.ai</footer>
+<script>
+function toggleScript(id) {
+  const el = document.getElementById(id);
+  const btn = el.previousElementSibling;
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    btn.textContent = '▴ Hide Script';
+  } else {
+    el.style.display = 'none';
+    btn.textContent = '▾ Show Full Script';
+  }
+}
+</script>
+</body>
+</html>
