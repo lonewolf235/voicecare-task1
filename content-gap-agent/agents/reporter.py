@@ -1,11 +1,9 @@
 """
-reporter.py - Sends formatted output to Slack and saves results to CSV/JSON/HTML.
+reporter.py - Sends formatted output to Slack and saves results to CSV.
 
 Takes gap analysis + generated scripts and:
 1. Saves a timestamped CSV report of all gaps + scripts
-2. Saves a full JSON archive
-3. Generates a self-contained HTML dashboard (opened in the browser)
-4. Posts a formatted Slack message with the top findings
+2. Posts a formatted Slack message with the top findings
 """
 
 import csv
@@ -155,405 +153,6 @@ def save_json_report(
         json.dump(report, f, indent=2, default=str)
 
     logger.info(f"JSON report saved: {filepath}")
-    return filepath
-
-
-# ---------------------------------------------------------------------------
-# HTML Dashboard
-# ---------------------------------------------------------------------------
-
-def _esc(text: str) -> str:
-    """Escape HTML special characters."""
-    return (
-        str(text)
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
-
-
-def _score_row_color(priority_score: float) -> str:
-    """Return a background colour for a gap table row based on priority score."""
-    if priority_score >= 8:
-        return "#dcfce7"   # green-100
-    if priority_score >= 5:
-        return "#fef9c3"   # yellow-100
-    return "#fee2e2"       # red-100
-
-
-def _gap_row_html(gap: dict) -> str:
-    scores    = gap.get("scores", {})
-    priority  = scores.get("priority_score", 0)
-    try:
-        priority = float(priority)
-    except (TypeError, ValueError):
-        priority = 0.0
-    competitors = ", ".join(gap.get("covered_by_competitors", [])) or "—"
-    bg = _score_row_color(priority)
-    return (
-        f'<tr style="background:{bg};">'
-        f'<td class="px-4 py-3 text-center font-bold text-gray-700">{_esc(gap.get("rank",""))}</td>'
-        f'<td class="px-4 py-3 font-semibold text-gray-800">{_esc(gap.get("topic",""))}</td>'
-        f'<td class="px-4 py-3 text-center">{_esc(scores.get("search_demand","—"))}</td>'
-        f'<td class="px-4 py-3 text-center">{_esc(scores.get("novelty","—"))}</td>'
-        f'<td class="px-4 py-3 text-center">{_esc(scores.get("viral","—"))}</td>'
-        f'<td class="px-4 py-3 text-center font-bold" style="color:#0891b2">{priority:.1f}</td>'
-        f'<td class="px-4 py-3 text-sm text-gray-600">{_esc(competitors)}</td>'
-        f'<td class="px-4 py-3 text-sm text-gray-600">{_esc(gap.get("recommended_angle","—"))}</td>'
-        f'</tr>\n'
-    )
-
-
-def _script_card_html(script: dict, idx: int) -> str:
-    """Return HTML for a single script accordion card."""
-    topic          = _esc(script.get("topic", f"Script {idx+1}"))
-    thumbnail_text = _esc(script.get("thumbnail_text", ""))
-    hook_text      = _esc((script.get("hook") or {}).get("text", ""))
-    caption        = _esc(script.get("caption", ""))
-    hashtags       = " ".join(
-        f'<span class="hashtag-pill">{_esc(h)}</span>'
-        for h in script.get("hashtags", [])
-    )
-    duration = script.get("total_duration_seconds", "")
-
-    # Parse scenes from full_script text (looks for [SCENE_n] markers)
-    full_script = script.get("full_script", "")
-    scene_rows = ""
-    if full_script:
-        import re
-        scenes = re.split(r'\[SCENE_\d+\]', full_script)
-        scene_titles_found = re.findall(r'\[SCENE_(\d+)\]', full_script)
-        for i, (scene_n, scene_text) in enumerate(zip(scene_titles_found, scenes[1:])):
-            scene_rows += (
-                f'<details class="scene-details">'
-                f'<summary class="scene-summary">Scene {_esc(scene_n)}</summary>'
-                f'<p class="scene-body">{_esc(scene_text.strip())}</p>'
-                f'</details>\n'
-            )
-
-    cta_match = ""
-    import re
-    cta_found = re.search(r'\[CTA\](.*?)(?:\[|$)', full_script, re.DOTALL)
-    if cta_found:
-        cta_match = f'<div class="cta-box"><strong>CTA:</strong> {_esc(cta_found.group(1).strip())}</div>'
-
-    return f"""
-<div class="script-card">
-  <div class="script-card-header">
-    <div>
-      <span class="thumbnail-badge">{thumbnail_text}</span>
-      <h3 class="script-title">{topic}</h3>
-    </div>
-    {f'<span class="duration-badge">⏱ {duration}s</span>' if duration else ''}
-  </div>
-
-  <div class="hook-box">
-    <div class="hook-label">🪝 Hook</div>
-    <div class="hook-text">"{hook_text}"</div>
-  </div>
-
-  {scene_rows}
-  {cta_match}
-
-  {f'<div class="caption-box"><strong>Caption:</strong> {caption}</div>' if caption else ''}
-  {f'<div class="hashtags-row">{hashtags}</div>' if hashtags else ''}
-</div>
-"""
-
-
-def generate_html_report(
-    gap_analysis: dict[str, Any],
-    scripts: list[dict[str, Any]],
-    run_timestamp: str,
-) -> str:
-    """
-    Generate a self-contained HTML dashboard string.
-
-    Returns:
-        Complete HTML as a string (no external file dependencies).
-    """
-    gaps           = gap_analysis.get("top_gaps", [])
-    total_gaps     = gap_analysis.get("total_gaps_found", len(gaps))
-    analysis_date  = gap_analysis.get("analysis_date", run_timestamp[:10])
-    summary        = _esc(gap_analysis.get("summary", ""))
-    ok_scripts     = [s for s in scripts if not s.get("error")]
-    top_score      = ""
-    if gaps:
-        raw = gaps[0].get("scores", {}).get("priority_score", "")
-        try:
-            top_score = f"{float(raw):.1f}"
-        except (TypeError, ValueError):
-            top_score = str(raw)
-
-    gap_rows_html   = "".join(_gap_row_html(g) for g in gaps)
-    script_cards    = "".join(_script_card_html(s, i) for i, s in enumerate(ok_scripts))
-    chart_labels    = json.dumps([g.get("topic", "")[:30] for g in gaps])
-    chart_scores    = json.dumps([
-        round(float(g.get("scores", {}).get("priority_score", 0)), 2)
-        for g in gaps
-    ])
-
-    return f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Content Gap Dashboard — Voicecare.ai</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    :root {{
-      --vc-primary: #0891b2;
-      --vc-accent:  #06b6d4;
-      --vc-dark:    #0c4a6e;
-    }}
-    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-    body {{ font-family: 'Inter', sans-serif; background: #f0f9ff; color: #1e293b; }}
-    a {{ color: var(--vc-primary); }}
-
-    /* ── Header ── */
-    header {{
-      background: var(--vc-dark);
-      color: #fff;
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }}
-    .logo-icon {{
-      width: 2rem; height: 2rem; border-radius: 0.5rem;
-      background: var(--vc-accent);
-      display: flex; align-items: center; justify-content: center;
-    }}
-    .logo-text {{ font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; }}
-    .header-right {{ margin-left: auto; font-size: 0.8rem; color: #a5f3fc; }}
-
-    /* ── Layout ── */
-    main {{ max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem; }}
-    section {{ margin-bottom: 2.5rem; }}
-    h2 {{ font-size: 1.25rem; font-weight: 700; color: #0c4a6e; margin-bottom: 1rem;
-          border-left: 4px solid var(--vc-accent); padding-left: 0.75rem; }}
-
-    /* ── Summary cards ── */
-    .cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }}
-    .card {{
-      background: #fff; border-radius: 1rem; padding: 1.5rem;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.07); border: 1px solid #e0f2fe;
-    }}
-    .card-value {{ font-size: 2.4rem; font-weight: 800; color: var(--vc-primary); line-height: 1; }}
-    .card-label {{ font-size: 0.8rem; color: #64748b; margin-top: 0.4rem; font-weight: 500; }}
-
-    /* ── Summary box ── */
-    .summary-box {{
-      background: #fff; border-radius: 1rem; padding: 1.25rem 1.5rem;
-      border: 1px solid #e0f2fe; color: #334155; font-size: 0.95rem; line-height: 1.7;
-    }}
-
-    /* ── Chart ── */
-    .chart-wrap {{
-      background: #fff; border-radius: 1rem; padding: 1.5rem;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.07); border: 1px solid #e0f2fe;
-    }}
-
-    /* ── Gap table ── */
-    .table-wrap {{
-      overflow-x: auto; border-radius: 1rem;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.07); border: 1px solid #e0f2fe;
-    }}
-    table {{ border-collapse: collapse; width: 100%; background: #fff; }}
-    thead {{ background: var(--vc-dark); color: #fff; }}
-    thead th {{ padding: 0.75rem 1rem; text-align: left; font-size: 0.78rem;
-                font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }}
-    tbody tr {{ border-bottom: 1px solid #f1f5f9; }}
-    tbody td {{ font-size: 0.85rem; }}
-    tbody tr:last-child {{ border-bottom: none; }}
-
-    /* ── Script cards ── */
-    .script-card {{
-      background: #fff; border-radius: 1rem; padding: 1.5rem;
-      margin-bottom: 1.25rem;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.07); border: 1px solid #e0f2fe;
-    }}
-    .script-card-header {{
-      display: flex; justify-content: space-between; align-items: flex-start;
-      margin-bottom: 1rem;
-    }}
-    .thumbnail-badge {{
-      display: inline-block; background: var(--vc-dark); color: #a5f3fc;
-      font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem;
-      border-radius: 0.35rem; margin-bottom: 0.4rem; letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }}
-    .script-title {{ font-size: 1.1rem; font-weight: 700; color: #0c4a6e; margin-top: 0.25rem; }}
-    .duration-badge {{
-      font-size: 0.75rem; background: #f0f9ff; color: var(--vc-primary);
-      border: 1px solid #bae6fd; border-radius: 1rem; padding: 0.25rem 0.6rem; white-space: nowrap;
-    }}
-    .hook-box {{
-      background: #f0f9ff; border-left: 4px solid var(--vc-accent);
-      border-radius: 0.5rem; padding: 0.9rem 1rem; margin-bottom: 1rem;
-    }}
-    .hook-label {{ font-size: 0.72rem; font-weight: 700; color: var(--vc-primary);
-                   text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }}
-    .hook-text {{ font-size: 0.95rem; color: #1e293b; font-style: italic; line-height: 1.5; }}
-    .scene-details {{
-      border: 1px solid #e0f2fe; border-radius: 0.5rem; margin-bottom: 0.5rem; overflow: hidden;
-    }}
-    .scene-summary {{
-      cursor: pointer; padding: 0.6rem 1rem; font-size: 0.82rem; font-weight: 600;
-      color: var(--vc-primary); background: #f0f9ff; list-style: none; user-select: none;
-    }}
-    .scene-summary::-webkit-details-marker {{ display: none; }}
-    .scene-summary::before {{ content: '▶  '; font-size: 0.65rem; }}
-    details[open] .scene-summary::before {{ content: '▼  '; }}
-    .scene-body {{ padding: 0.75rem 1rem; font-size: 0.85rem; color: #334155; line-height: 1.65; }}
-    .cta-box {{
-      background: #ecfdf5; border-left: 4px solid #22c55e;
-      border-radius: 0.5rem; padding: 0.75rem 1rem; margin: 0.75rem 0;
-      font-size: 0.88rem; color: #166534;
-    }}
-    .caption-box {{
-      font-size: 0.85rem; color: #475569; margin-top: 0.75rem; line-height: 1.55;
-    }}
-    .hashtags-row {{ margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }}
-    .hashtag-pill {{
-      background: #f0f9ff; color: var(--vc-primary); font-size: 0.75rem; font-weight: 500;
-      border: 1px solid #bae6fd; border-radius: 1rem; padding: 0.2rem 0.55rem;
-    }}
-
-    /* ── Downloads ── */
-    .dl-row {{ display: flex; flex-wrap: wrap; gap: 0.75rem; }}
-    .dl-btn {{
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      padding: 0.55rem 1.1rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 500;
-      text-decoration: none; border: 1.5px solid var(--vc-primary);
-      color: #fff; background: var(--vc-primary); transition: opacity 0.2s;
-    }}
-    .dl-btn-outline {{ background: #fff; color: var(--vc-primary); }}
-    .dl-btn:hover {{ opacity: 0.85; }}
-
-    /* ── Footer ── */
-    footer {{
-      text-align: center; padding: 1.5rem; font-size: 0.82rem; color: #94a3b8;
-      border-top: 1px solid #e0f2fe; background: #fff; margin-top: 2rem;
-    }}
-    footer strong {{ color: #475569; }}
-  </style>
-</head>
-<body>
-
-<header>
-  <div class="logo-icon">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff"
-         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-      <line x1="12" y1="19" x2="12" y2="23"/>
-      <line x1="8"  y1="23" x2="16" y2="23"/>
-    </svg>
-  </div>
-  <div>
-    <div class="logo-text">voicecare.ai</div>
-  </div>
-  <div class="header-right">Content Gap Dashboard &nbsp;|&nbsp; {_esc(analysis_date)}</div>
-</header>
-
-<main>
-
-  <!-- Summary Cards -->
-  <section>
-    <div class="cards">
-      <div class="card">
-        <div class="card-value">{total_gaps}</div>
-        <div class="card-label">Gaps Identified</div>
-      </div>
-      <div class="card">
-        <div class="card-value">{len(ok_scripts)}</div>
-        <div class="card-label">Scripts Generated</div>
-      </div>
-      <div class="card">
-        <div class="card-value">{top_score or "—"}</div>
-        <div class="card-label">Top Gap Score</div>
-      </div>
-      <div class="card">
-        <div class="card-value">{_esc(analysis_date)}</div>
-        <div class="card-label">Analysis Date</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Executive Summary -->
-  {'<section><h2>Executive Summary</h2><div class="summary-box">' + summary + '</div></section>' if summary else ''}
-
-  <!-- Priority Score Chart -->
-  {'<section><h2>Gap Priority Scores</h2><div class="chart-wrap"><canvas id="gapChart" height="120"></canvas></div></section>' if gaps else ''}
-
-  <!-- Gap Analysis Table -->
-  <section>
-    <h2>Content Gap Analysis</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Topic</th>
-            <th>Search Vol</th>
-            <th>Novelty</th>
-            <th>Viral</th>
-            <th>Priority ⬆</th>
-            <th>Competitors</th>
-            <th>Recommended Angle</th>
-          </tr>
-        </thead>
-        <tbody>
-          {gap_rows_html or '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#94a3b8">No gaps found.</td></tr>'}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- Script Cards -->
-  {'<section><h2>Generated Video Scripts</h2>' + script_cards + '</section>' if ok_scripts else ''}
-
-  <!-- Downloads -->
-  <section>
-    <h2>Download Reports</h2>
-    <div class="dl-row">
-      <a href="/download/gaps"    class="dl-btn" download>⬇ Gaps CSV</a>
-      <a href="/download/scripts" class="dl-btn dl-btn-outline" download>⬇ Scripts CSV</a>
-      <a href="/download/json"    class="dl-btn dl-btn-outline" download>⬇ Full JSON</a>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  Built by <strong>Shubham Anand</strong> &ensp;|&ensp;
-  <span style="color:var(--vc-primary);font-weight:600;">Voicecare.ai</span> &nbsp;© 2025
-</footer>
-
-<script>
-  {'(function(){var ctx=document.getElementById("gapChart").getContext("2d");new Chart(ctx,{type:"bar",data:{labels:' + chart_labels + ',datasets:[{label:"Priority Score",data:' + chart_scores + ',backgroundColor:"rgba(6,182,212,0.7)",borderColor:"rgba(8,145,178,1)",borderWidth:1.5,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:10,grid:{color:"#e0f2fe"}},x:{grid:{display:false}}}}});})();' if gaps else ''}
-</script>
-
-</body>
-</html>"""
-
-
-def save_html_report(
-    gap_analysis: dict[str, Any],
-    scripts: list[dict[str, Any]],
-    run_timestamp: str,
-) -> Path:
-    """Save the HTML dashboard to the reports directory and return its path."""
-    reports_dir = _ensure_reports_dir()
-    filepath = reports_dir / f"dashboard_{run_timestamp}.html"
-    filepath.write_text(
-        generate_html_report(gap_analysis, scripts, run_timestamp),
-        encoding="utf-8",
-    )
-    logger.info(f"HTML dashboard saved: {filepath}")
     return filepath
 
 
@@ -736,6 +335,286 @@ def send_slack_report(
 # Main Entry Point
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# HTML Dashboard
+# ---------------------------------------------------------------------------
+
+def _html_escape(text: str) -> str:
+    return (
+        str(text)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("\n", "<br>")
+    )
+
+
+def generate_html_dashboard(
+    gap_analysis: dict[str, Any],
+    scripts: list[dict[str, Any]],
+    run_timestamp: str,
+) -> str:
+    """Return a self-contained HTML dashboard string with all 3 script posts."""
+    top_gaps = gap_analysis.get("top_gaps", [])
+    total_gaps = gap_analysis.get("total_gaps_found", 0)
+    summary = _html_escape(gap_analysis.get("summary", ""))
+    analysis_date = gap_analysis.get("analysis_date", run_timestamp[:10])
+    script_count = sum(1 for s in scripts if not s.get("error"))
+
+    # Build script cards
+    cards_html = ""
+    gradient_pairs = [
+        ("#00d4aa", "#007a62"),
+        ("#6366f1", "#4338ca"),
+        ("#f59e0b", "#b45309"),
+    ]
+    for idx, script in enumerate(scripts[:3]):
+        if script.get("error"):
+            continue
+        gap = top_gaps[idx] if idx < len(top_gaps) else {}
+        scores = gap.get("scores", {})
+        priority = scores.get("priority_score", 0)
+        priority_pct = min(int(float(priority) * 10), 100)
+        topic = _html_escape(script.get("topic") or gap.get("topic", f"Topic {idx + 1}"))
+        hook = _html_escape(script.get("hook", {}).get("text", ""))
+        full_script = _html_escape(script.get("full_script", ""))
+        caption = _html_escape(script.get("caption", ""))
+        hashtags = script.get("hashtags", [])
+        thumbnail = _html_escape(script.get("thumbnail_text", ""))
+        competitors = ", ".join(gap.get("covered_by_competitors", []))
+        angle = _html_escape(gap.get("recommended_angle", ""))
+        g1, g2 = gradient_pairs[idx % len(gradient_pairs)]
+        pills = "".join(
+            f'<span style="background:rgba(255,255,255,0.12);border-radius:999px;'
+            f'padding:3px 12px;font-size:12px;margin:3px 3px 0 0;display:inline-block;">'
+            f'{_html_escape(h)}</span>'
+            for h in hashtags
+        )
+        card_id = f"script{idx}"
+        cards_html += f"""
+        <div class="card">
+          <div class="card-header" style="background:linear-gradient(135deg,{g1} 0%,{g2} 100%);">
+            <div class="rank">#{idx + 1}</div>
+            <div class="card-meta">
+              <div class="card-topic">{topic}</div>
+              {f'<div class="card-competitor">Covered by: {_html_escape(competitors)}</div>' if competitors else ''}
+            </div>
+            <div class="score-badge">{float(priority):.1f}/10</div>
+          </div>
+          <div class="card-body">
+            <div class="score-row">
+              <span>Priority Score</span>
+              <div class="score-bar">
+                <div class="score-fill" style="width:{priority_pct}%;background:linear-gradient(90deg,{g1},{g2});"></div>
+              </div>
+              <span>{float(priority):.1f}</span>
+            </div>
+            {f'<div class="angle"><strong>💡 Recommended Angle:</strong> {angle}</div>' if angle else ''}
+            <div class="section-title">🪝 Hook</div>
+            <blockquote class="hook-text">{hook}</blockquote>
+            <div class="section-title">📜 Full Script</div>
+            <button class="toggle-btn" onclick="toggleScript('{card_id}')">▾ Show Full Script</button>
+            <div class="script-content" id="{card_id}" style="display:none">
+              <pre>{full_script}</pre>
+            </div>
+            {f'<div class="section-title">📱 Social Caption</div><p class="caption">{caption}</p>' if caption else ''}
+            {f'<div class="section-title">🏷 Hashtags</div><div class="hashtags">{pills}</div>' if pills else ''}
+            {f'<div class="thumbnail">🖼 Thumbnail Text: <strong>{thumbnail}</strong></div>' if thumbnail else ''}
+          </div>
+        </div>"""
+
+    if not cards_html:
+        cards_html = """<div style="text-align:center;color:#6b7a99;padding:40px;">
+          <div style="font-size:40px;margin-bottom:12px;">📝</div>
+          <div>No scripts generated. Run in live mode with real API keys to generate scripts.</div>
+        </div>"""
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Gap Report | VoiceCare.ai</title>
+<style>
+  :root {{
+    --bg: #070b14; --surface: #0e1524; --surface2: #162035;
+    --primary: #00d4aa; --text: #e8f1ff; --muted: #6b7a99;
+    --border: #1e2d4d;
+  }}
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }}
+  header {{
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 18px 40px; display: flex; align-items: center; justify-content: space-between;
+  }}
+  .logo {{ font-size: 22px; font-weight: 800; }}
+  .logo-dot {{ color: var(--primary); }}
+  .logo-tag {{ font-size: 12px; color: var(--muted); margin-top: 2px; }}
+  .date-badge {{
+    background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3);
+    color: var(--primary); border-radius: 999px; padding: 4px 16px; font-size: 13px;
+  }}
+  main {{ max-width: 860px; margin: 0 auto; padding: 40px 24px 60px; }}
+  .summary-card {{
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px; margin-bottom: 36px;
+  }}
+  .summary-title {{ font-size: 20px; font-weight: 700; margin-bottom: 14px; color: var(--primary); }}
+  .meta-row {{
+    display: flex; gap: 24px; margin-bottom: 14px; flex-wrap: wrap;
+  }}
+  .meta-item {{
+    display: flex; flex-direction: column; gap: 2px;
+  }}
+  .meta-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }}
+  .meta-val {{ font-size: 20px; font-weight: 700; color: var(--text); }}
+  .summary-text {{ color: var(--muted); line-height: 1.6; }}
+  .section-header {{
+    font-size: 22px; font-weight: 700; margin-bottom: 22px;
+    background: linear-gradient(90deg, var(--primary), #6366f1);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }}
+  .card {{
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 28px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+  }}
+  .card:hover {{ transform: translateY(-2px); }}
+  .card-header {{
+    padding: 22px 28px; display: flex; align-items: center; gap: 16px;
+    color: #fff;
+  }}
+  .rank {{
+    font-size: 32px; font-weight: 900; opacity: 0.9; flex-shrink: 0;
+    background: rgba(0,0,0,0.2); border-radius: 10px;
+    width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+  }}
+  .card-meta {{ flex: 1; }}
+  .card-topic {{ font-size: 18px; font-weight: 700; margin-bottom: 4px; }}
+  .card-competitor {{ font-size: 12px; opacity: 0.8; }}
+  .score-badge {{
+    background: rgba(0,0,0,0.25); border-radius: 10px;
+    padding: 8px 14px; font-size: 18px; font-weight: 700;
+    white-space: nowrap;
+  }}
+  .card-body {{ padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; }}
+  .score-row {{ display: flex; align-items: center; gap: 10px; }}
+  .score-row > span {{ font-size: 12px; color: var(--muted); white-space: nowrap; }}
+  .score-bar {{ flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }}
+  .score-fill {{ height: 100%; border-radius: 3px; }}
+  .angle {{ font-size: 13px; color: var(--muted); padding: 10px 14px; background: var(--surface2); border-radius: 8px; border-left: 3px solid var(--primary); }}
+  .section-title {{ font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }}
+  .hook-text {{
+    border-left: 3px solid var(--primary); padding: 12px 18px;
+    background: rgba(0,212,170,0.06); border-radius: 0 8px 8px 0;
+    font-size: 16px; font-style: italic; line-height: 1.6; color: var(--text);
+  }}
+  .toggle-btn {{
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--primary); padding: 8px 18px; border-radius: 8px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s; width: fit-content;
+  }}
+  .toggle-btn:hover {{ background: rgba(0,212,170,0.1); }}
+  .script-content {{
+    background: #000308; border: 1px solid #1a2a1a; border-radius: 10px;
+    padding: 16px;
+  }}
+  .script-content pre {{
+    color: #00ff41; font-family: 'Courier New', monospace; font-size: 12px;
+    line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+  }}
+  .caption {{
+    background: var(--surface2); border-radius: 8px; padding: 12px 16px;
+    font-size: 14px; line-height: 1.6; color: var(--text);
+  }}
+  .hashtags {{ display: flex; flex-wrap: wrap; gap: 0; }}
+  .thumbnail {{
+    font-size: 13px; color: var(--muted);
+    padding: 10px 14px; background: var(--surface2); border-radius: 8px;
+  }}
+  .download-section {{
+    text-align: center; padding: 32px 0 8px;
+  }}
+  .dl-btn {{
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary) 0%, #007a62 100%);
+    color: #000; font-weight: 700; font-size: 16px;
+    padding: 14px 40px; border-radius: 999px; text-decoration: none;
+    transition: all 0.2s; box-shadow: 0 4px 18px rgba(0,212,170,0.3);
+  }}
+  .dl-btn:hover {{ transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,212,170,0.4); }}
+  footer {{
+    text-align: center; padding: 20px; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 13px; margin-top: 20px;
+  }}
+  footer strong {{ color: var(--text); }}
+  @media (max-width: 600px) {{
+    header {{ padding: 14px 20px; flex-direction: column; gap: 10px; text-align: center; }}
+    .card-header {{ flex-direction: column; text-align: center; }}
+    main {{ padding: 24px 16px; }}
+  }}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">Voice<span class="logo-dot">Care.ai</span></div>
+    <div class="logo-tag">The Content Gap Agent</div>
+  </div>
+  <div class="date-badge">Report: {analysis_date}</div>
+</header>
+<main>
+  <div class="summary-card">
+    <div class="summary-title">📊 Executive Summary</div>
+    <div class="meta-row">
+      <div class="meta-item"><span class="meta-label">Gaps Found</span><span class="meta-val">{total_gaps}</span></div>
+      <div class="meta-item"><span class="meta-label">Scripts Generated</span><span class="meta-val">{script_count}</span></div>
+      <div class="meta-item"><span class="meta-label">Analysis Date</span><span class="meta-val" style="font-size:15px;">{analysis_date}</span></div>
+    </div>
+    <p class="summary-text">{summary}</p>
+  </div>
+  <div class="section-header">🎬 Generated Content Posts</div>
+  {cards_html}
+  <div class="download-section">
+    <a href="/download" class="dl-btn">⬇ &nbsp;Download Full Report (ZIP)</a>
+  </div>
+</main>
+<footer>Built by <strong>Shubham Anand</strong> &nbsp;&bull;&nbsp; VoiceCare.ai</footer>
+<script>
+function toggleScript(id) {{
+  const el = document.getElementById(id);
+  const btn = el.previousElementSibling;
+  if (el.style.display === 'none') {{
+    el.style.display = 'block';
+    btn.textContent = '▴ Hide Script';
+  }} else {{
+    el.style.display = 'none';
+    btn.textContent = '▾ Show Full Script';
+  }}
+}}
+</script>
+</body>
+</html>"""
+
+
+def save_html_dashboard(
+    gap_analysis: dict[str, Any],
+    scripts: list[dict[str, Any]],
+    run_timestamp: str,
+) -> Path:
+    """Generate and save the HTML dashboard. Returns the saved file path."""
+    reports_dir = _ensure_reports_dir()
+    filepath = reports_dir / f"dashboard_{run_timestamp}.html"
+    html = generate_html_dashboard(gap_analysis, scripts, run_timestamp)
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(html)
+    logger.info(f"HTML dashboard saved: {filepath}")
+    return filepath
+
+
 def run_reporter(
     gap_analysis: dict[str, Any],
     scripts: list[dict[str, Any]],
@@ -771,7 +650,7 @@ def run_reporter(
     json_report = save_json_report(gap_analysis, scripts, run_timestamp)
 
     logger.info("Generating HTML dashboard...")
-    html_report = save_html_report(gap_analysis, scripts, run_timestamp)
+    html_dashboard = save_html_dashboard(gap_analysis, scripts, run_timestamp)
 
     logger.info("Sending Slack report...")
     slack_sent = send_slack_report(
@@ -787,7 +666,7 @@ def run_reporter(
         "gaps_csv": str(gaps_csv),
         "scripts_csv": str(scripts_csv),
         "json_report": str(json_report),
-        "html_report": str(html_report),
+        "html_dashboard": str(html_dashboard),
         "notion_exports": notion_success_count,
         "slack_sent": slack_sent,
         "gaps_found": gap_analysis.get("total_gaps_found", 0),
@@ -805,7 +684,7 @@ def run_reporter(
         f"Gaps CSV:          {result['gaps_csv']}\n"
         f"Scripts CSV:       {result['scripts_csv']}\n"
         f"JSON Report:       {result['json_report']}\n"
-        f"HTML Dashboard:    {result['html_report']}\n"
+        f"HTML Dashboard:    {result['html_dashboard']}\n"
         f"Notion Exports:    {notion_success_count}\n"
         f"Slack sent:        {result['slack_sent']}\n"
         f"{'=' * 50}"

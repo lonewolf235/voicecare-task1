@@ -1,0 +1,33 @@
+# VoiceCare.ai — Content Gap Agent
+# Root requirements.txt used by Vercel and local dev
+
+# Web server
+flask>=3.0.0
+a2wsgi>=1.10.0         # WSGI→ASGI bridge for uvicorn local dev
+uvicorn>=0.29.0        # Local dev server
+
+# Web scraping
+firecrawl-py>=1.5.0
+
+# AI / LLM
+openai>=1.30.0
+
+# Data
+pandas>=2.1.0
+numpy>=1.26.0
+
+# ML
+scikit-learn>=1.4.0
+
+# Config
+pyyaml>=6.0.1
+
+# Scheduling
+apscheduler>=3.10.4
+
+# HTTP / integrations
+requests>=2.31.0
+notion-client>=2.2.1
+
+# Environment
+python-dotenv>=1.0.0
