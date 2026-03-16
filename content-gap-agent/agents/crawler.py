@@ -20,6 +20,9 @@ Internal batch API (used by run_crawler):
 """
 
 import os
+import time
+import json
+import hashlib
 import logging
 from typing import Any
 from urllib.parse import urlparse
@@ -135,6 +138,80 @@ def _crawl_with_pagination(
     """
     # Convert exclude keywords to path-fragment patterns Firecrawl understands
     exclude_paths = [f"*{kw}*" for kw in exclude_keywords] if exclude_keywords else None
+    all_raw: list[dict[str, Any]] = []
+    current_url = url
+    first_call = True
+
+    while len(all_raw) < max_pages:
+        remaining = max_pages - len(all_raw)
+
+        max_retries = 3
+        retry_delay = 30
+        for attempt in range(max_retries):
+            try:
+                if hasattr(app, "v1") and hasattr(app.v1, "crawl_url"):
+                    from firecrawl.v1.client import V1ScrapeOptions
+                    scrape_opts = V1ScrapeOptions(
+                        formats=["markdown"],
+                        onlyMainContent=True,
+                        timeout=timeout_ms
+                    )
+                    if first_call:
+                        result = app.v1.crawl_url(
+                            current_url,
+                            exclude_paths=exclude_keywords,
+                            max_depth=max_depth,
+                            limit=min(remaining, max_pages),
+                            scrape_options=scrape_opts
+                        )
+                    else:
+                        result = app.v1.crawl_url(
+                            current_url,
+                            limit=remaining,
+                            scrape_options=scrape_opts
+                        )
+                elif hasattr(app, "crawl_url"):
+                    params = {
+                        "crawlerOptions": {
+                            "maxDepth": max_depth,
+                            "limit": min(remaining, max_pages),
+                            "excludes": exclude_keywords,
+                        },
+                        "pageOptions": {
+                            "onlyMainContent": True,
+                            "includeHtml": False,
+                        },
+                        "timeout": timeout_ms,
+                    }
+                    if first_call:
+                        result = app.crawl_url(current_url, params=params)
+                    else:
+                        result = app.crawl_url(current_url, params={"limit": remaining})
+                else:
+                    raise AttributeError("FirecrawlApp has no crawl_url method on this library version.")
+                
+                # If we get here without exception, break the retry loop
+                break
+                
+            except Exception as e:
+                error_str = str(e)
+                if "429" in error_str or "Rate limit exceeded" in error_str:
+                    if attempt < max_retries - 1:
+                        logger.warning(f"Rate limit exceeded. Waiting {retry_delay}s before retry {attempt + 1}/{max_retries}...")
+                        time.sleep(retry_delay)
+                        continue
+                # For other errors or out of retries, re-raise
+                raise
+        
+        first_call = False
+
+        batch = _pages_from_result(result, current_url)
+        all_raw.extend(batch)
+
+        cursor = _next_cursor(result)
+        if not cursor or not batch:
+            break
+        current_url = cursor
 
     scrape_opts = ScrapeOptions(
         formats=["markdown"],
@@ -164,6 +241,66 @@ def _crawl_with_pagination(
         next_url = page_result.next
 
     return all_docs[:max_pages]
+def _parse_pages(
+    raw_pages: list[dict],
+    site_name: str,
+    base_url: str,
+    exclude_keywords: list[str],
+) -> list[dict[str, Any]]:
+    """Convert raw Firecrawl page records to our standard schema."""
+    parsed = []
+    for raw_page in raw_pages:
+        # Normalize page object to dict
+        page = raw_page
+        if not isinstance(page, dict):
+            if hasattr(page, "model_dump"):
+                page = page.model_dump()
+            elif hasattr(page, "dict"):
+                page = page.dict()
+            else:
+                page = {"metadata": getattr(page, "metadata", {}), "content": getattr(page, "markdown", getattr(page, "content", ""))}
+
+        meta = page.get("metadata") or {}
+        if not isinstance(meta, dict):
+            if hasattr(meta, "model_dump"):
+                meta = meta.model_dump()
+            elif hasattr(meta, "dict"):
+                meta = meta.dict()
+            else:
+                try:
+                    meta = vars(meta)
+                except Exception:
+                    meta = {}
+
+        page_url = meta.get("sourceURL")
+        if not page_url:
+            page_url = base_url
+
+        if _should_skip(page_url, exclude_keywords):
+            logger.debug(f"Skipping excluded URL: {page_url}")
+            continue
+
+        raw_content = page.get("markdown") or page.get("content", "")
+        content = _clean_text(raw_content)
+        title = _clean_text(meta.get("title", ""))
+        description = _clean_text(meta.get("description", ""))
+        date = _extract_date(meta)
+
+        if not content and not title:
+            continue
+
+        parsed.append(
+            {
+                "site_name": site_name,
+                "url": page_url,
+                "title": title,
+                "description": description,
+                "content": content,
+                "date": date,
+                "word_count": len(content.split()),
+            }
+        )
+    return parsed
 
 
 # ---------------------------------------------------------------------------
@@ -274,7 +411,27 @@ def crawl_site(
     max_depth = crawl_settings.get("max_depth", _DEFAULT_MAX_DEPTH)
     timeout_s = crawl_settings.get("timeout_seconds", _DEFAULT_TIMEOUT_S)
 
+    from pathlib import Path
+    
+    # Ensure cache directory is always relative to the project root, not where the script was called from
+    project_root = Path(__file__).parent.parent
+    cache_dir = project_root / "cache"
+    os.makedirs(cache_dir, exist_ok=True)
+
     for base_url in urls:
+        cache_key = hashlib.md5(base_url.encode("utf-8")).hexdigest()
+        cache_path = cache_dir / f"{cache_key}.json"
+        
+        if cache_path.exists():
+            try:
+                with open(cache_path, "r", encoding="utf-8") as f:
+                    batch = json.load(f)
+                pages.extend(batch)
+                logger.info(f"[{site_name}] Loaded {len(batch)} pages from local cache for {base_url}")
+                continue
+            except Exception as e:
+                logger.warning(f"[{site_name}] Failed to read cache for {base_url}, re-crawling. Error: {e}")
+
         logger.info(f"[{site_name}] Crawling: {base_url}")
         try:
             docs = _crawl_with_pagination(
@@ -291,8 +448,20 @@ def crawl_site(
             ]
             pages.extend(batch)
             logger.info(f"[{site_name}] +{len(batch)} pages from {base_url}")
+            
+            # Save to cache
+            try:
+                with open(cache_path, "w", encoding="utf-8") as f:
+                    json.dump(batch, f)
+            except Exception as ce:
+                logger.warning(f"Failed to write cache for {base_url}: {ce}")
+                
         except Exception as e:
             logger.error(f"[{site_name}] Failed to crawl {base_url}: {e}")
+        
+        # Add a 1-minute sleep to respect Firecrawl rate limits (10 req/min free tier)
+        logger.info(f"[{site_name}] Sleeping for 60 seconds to respect rate limits...")
+        time.sleep(60)
 
     return pages
 

@@ -143,22 +143,12 @@ def main() -> int:
             return 1
     else:
         try:
-            own_site_cfg = config["own_site"]
-            competitor_cfgs = config.get("competitors", [])
-
-            # Use the new per-URL public API
-            own_pages: list[dict] = []
-            for url in own_site_cfg["urls"]:
-                own_pages.extend(scrape_own_site(url))
-
-            competitor_pages: dict[str, list[dict]] = {}
-            for comp in competitor_cfgs:
-                pages: list[dict] = []
-                for url in comp["urls"]:
-                    pages.extend(scrape_competitor(url))
-                competitor_pages[comp["name"]] = pages
-
-            crawl_data = {"own_site": own_pages, "competitors": competitor_pages}
+            # Use the integrated crawler pipeline to leverage rate-limit retries and local caching
+            from agents.crawler import run_crawler
+            crawl_data = run_crawler(args.config)
+            
+            own_pages = crawl_data.get("own_site", [])
+            competitor_pages = crawl_data.get("competitors", {})
 
             if args.save_crawl:
                 save_crawl_cache(crawl_data)

@@ -1,0 +1,137 @@
+{
+  "name": "Content Gap Agent",
+  "active": false,
+  "settings": {},
+  "pinData": {},
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Every Monday 8AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "2",
+      "name": "Run Full Pipeline",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "command": "cmd /c \"cd /d F:\\\\VoiceCare_Assignment\\\\content-gap-agent && F:\\\\VoiceCare_Assignment\\\\venv\\\\Scripts\\\\python.exe main.py\""
+      }
+    },
+    {
+      "id": "3",
+      "name": "Check For Failure",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.exitCode }}",
+              "operation": "notEqual",
+              "value2": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "4",
+      "name": "Notify Slack on Failure",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        200
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "#alerts",
+        "text": "=⚠️ Content Gap Agent FAILED at {{ $now }}:\n{{ $json.stderr }}"
+      }
+    },
+    {
+      "id": "5",
+      "name": "Notify Slack on Success",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        400
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "#content-strategy",
+        "text": "=✅ Content Gap Agent Finished Successfully:\n\n```\n{{ $json.stdout }}\n```"
+      }
+    }
+  ],
+  "connections": {
+    "Every Monday 8AM": {
+      "main": [
+        [
+          {
+            "node": "Run Full Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Full Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Check For Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check For Failure": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack on Failure",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Slack on Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

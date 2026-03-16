@@ -22,7 +22,7 @@ from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
-GPT_MODEL = os.getenv("OPENAI_GPT_MODEL", "gpt-4o")
+GPT_MODEL = os.getenv("OPENAI_GPT_MODEL", "gpt-5.4")
 OUTPUTS_DIR = os.getenv("OUTPUTS_DIR", "outputs")
 DEFAULT_TARGET_AUDIENCE = os.getenv(
     "TARGET_AUDIENCE",
@@ -128,15 +128,17 @@ def generate_video_script(
 
     logger.info(f"generate_video_script: generating script for '{top_gap_topic}'...")
 
-    response = client.chat.completions.create(
+    response = client.responses.create(
         model=GPT_MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-        temperature=0.8,
-        max_tokens=2000,
+        input=prompt,
     )
 
-    raw_json = response.choices[0].message.content
+    raw_json = response.output_text
+    if raw_json.strip().startswith("```json"):
+        raw_json = raw_json.strip().strip("`").removeprefix("json").strip()
+    elif raw_json.strip().startswith("```"):
+        raw_json = raw_json.strip().strip("`").strip()
+
     script: dict[str, Any] = json.loads(raw_json)
 
     # Guarantee the 5-scene keys exist (GPT may use different names)
@@ -221,15 +223,18 @@ def generate_script_for_gap(
     prompt = _build_batch_prompt(prompt_template, gap, target_audience)
 
     logger.info(f"generate_script_for_gap: '{gap.get('topic', 'Unknown')}'")
-    response = client.chat.completions.create(
+    response = client.responses.create(
         model=GPT_MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-        temperature=0.8,
-        max_tokens=2000,
+        input=prompt,
     )
 
-    script = json.loads(response.choices[0].message.content)
+    raw_json = response.output_text
+    if raw_json.strip().startswith("```json"):
+        raw_json = raw_json.strip().strip("`").removeprefix("json").strip()
+    elif raw_json.strip().startswith("```"):
+        raw_json = raw_json.strip().strip("`").strip()
+
+    script = json.loads(raw_json)
     script = _normalise_scenes(script, gap.get("topic", ""))
     script["gap_rank"] = gap.get("rank", 0)
     script["priority_score"] = gap.get("scores", {}).get("priority_score", 0)

@@ -15,32 +15,19 @@ own_site:
   name: "Voicecare.ai"
   urls:
     - "https://voicecare.ai/blog"
-    - "https://voicecare.ai/resources"
     - "https://voicecare.ai/use-cases"
 
 # =============================================================================
 # Competitors — update weekly
 # =============================================================================
 competitors:
-  - name: "Syllable"
+  - name: "Prosper AI"
     urls:
-      - "https://syllable.ai/blog"
-      - "https://syllable.ai/resources"
+      - "https://www.getprosper.ai/blog"
+      - "https://www.getprosper.ai/resources"
 
-  - name: "Nuance DAX"
-    urls:
-      - "https://www.nuance.com/healthcare/ambient-clinical-intelligence.html"
-      - "https://www.nuance.com/blog"
 
-  - name: "Hyro AI"
-    urls:
-      - "https://www.hyro.ai/blog"
-      - "https://www.hyro.ai/resources"
-
-  - name: "Parlance"
-    urls:
-      - "https://parlance.com/blog"
-
+      
 # =============================================================================
 # Company Context — injected into script generation prompts
 # =============================================================================
