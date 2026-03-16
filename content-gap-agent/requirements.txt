@@ -27,6 +27,10 @@ notion-client>=2.2.1         # Notion SDK for exporting generated scripts
 # --- Environment ---
 python-dotenv>=1.0.0         # Load .env files
 
+# --- Web Server (Vercel/Railway deployment) ---
+fastapi>=0.110.0             # ASGI web framework (routes, SSE streaming)
+uvicorn>=0.27.0              # ASGI server for Railway/Render
+
 # --- Development / Testing (optional) ---
 pytest>=8.0.0                # Test runner
 pytest-mock>=3.12.0          # Mocking for tests
