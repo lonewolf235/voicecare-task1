@@ -9,12 +9,19 @@ services:
         value: "3.11"
       # ── Add your real API keys in the Render dashboard ──
       # These placeholders show which env vars the app expects.
-      # You can also set them via Render Dashboard > Environment instead.
       - key: OPENAI_API_KEY
-        value: "sk-placeholder-replace-me"
+        value: "sk-placeholder"
       - key: FIRECRAWL_API_KEY
-        value: "fc-placeholder-replace-me"
+        value: "fc-placeholder"
+      - key: SEMRUSH_API_KEY
+        value: "placeholder"
+      - key: SEMRUSH_DATABASE
+        value: "us"
       - key: NOTION_API_KEY
-        value: "ntn-placeholder-replace-me"
-      - key: SLACK_WEBHOOK_URL
-        value: "https://hooks.slack.com/services/placeholder"
+        value: "ntn-placeholder"
+      - key: NOTION_DATABASE_ID
+        value: "placeholder"
+      - key: COMPANY_NAME
+        value: "Voicecare.ai"
+      - key: TARGET_AUDIENCE
+        value: "Healthcare providers, clinic managers, and digital health teams"
